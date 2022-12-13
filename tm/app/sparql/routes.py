@@ -10,5 +10,11 @@ def query():
     form = DataForm()
     if form.validate_on_submit():
         flash('SPARQL query has been generated.')
-        #print(form.category.data)
-    return render_template('sparql/data_form.html', title='SPARQL', form=form)
+        selection = \
+            f"Category={form.category.data}\
+                Name={form.name.data}\
+                    Age={form.age.data}"
+    else:
+        selection=None
+    return render_template('sparql/data_form.html', title='SPARQL', 
+                            form=form, selection=selection)
