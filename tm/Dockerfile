@@ -1,8 +1,8 @@
 FROM python:latest
 
-RUN useradd microblog
+RUN useradd trusted_middleware
 
-WORKDIR /home/microblog
+WORKDIR /home/trusted_middleware
 
 COPY requirements.txt requirements.txt
 RUN python -m venv venv
@@ -11,13 +11,13 @@ RUN venv/bin/pip install gunicorn pymysql cryptography
 
 COPY app app
 COPY migrations migrations
-COPY microblog.py config.py boot.sh ./
+COPY trusted_middleware.py config.py boot.sh ./
 RUN chmod a+x boot.sh
 
-ENV FLASK_APP microblog.py
+ENV FLASK_APP trusted_middleware.py
 
-RUN chown -R microblog:microblog ./
-USER microblog
+RUN chown -R trusted_middleware:trusted_middleware ./
+USER trusted_middleware
 
 EXPOSE 5000
 ENTRYPOINT ["./boot.sh"]
