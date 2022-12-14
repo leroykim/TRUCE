@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<div class="page-header">
+    <h1>DATA</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
+</div>
+<br>
+<div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">Result</h3>
+    </div>
+    <div class="panel-body">
+        {% if selection %}
+            {{selection}}
+        {% else %}
+            Submit data forms first.
+        {% endif %}
+    </div>
+  </div>
+{% endblock %}

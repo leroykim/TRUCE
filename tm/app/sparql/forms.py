@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, BooleanField
+from wtforms import SubmitField, SelectField, BooleanField, TextAreaField
 
 class DataForm(FlaskForm):
     CATEGORIES = [
@@ -11,4 +11,8 @@ class DataForm(FlaskForm):
     category = SelectField('Data Category', choices=CATEGORIES)
     name = BooleanField('Name')
     age = BooleanField('Age')
+    submit = SubmitField('Submit')
+
+class SPARQLForm(FlaskForm):
+    sparql_query = TextAreaField("SPARQL Query")
     submit = SubmitField('Submit')

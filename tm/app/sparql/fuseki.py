@@ -1,18 +1,15 @@
 from rdflib import Namespace
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+from flask import current_app
 
 class FusekiConnector():
-    def __init__(self, endpoint, ontology_iri, namespace_abbr):
-        self.endpoint = endpoint
-        self.namespace = Namespace(ontology_iri)
-        self.namespace_abbr = namespace_abbr
+    def __init__(self):
+        self.endpoint = current_app.config['FUSEKI_URL']
+        self.ontology_iri = current_app.config['ONTOLOGY_IRI']
+        self.namespace_abbr = current_app.config['NAMESPACE_ABR']
+        self.namespace = Namespace(self.ontology_iri)
         self.store = None
         self.connect()
-
-        # QUERY_ENDPOINT = 'http://localhost:3031/maryland_covid/query'
-        # UPDATE_ENDPOINT = 'http://localhost:3031/maryland_covid/update'
-        # ONTOLOGY_IRI = "https://knacc.umbc.edu/leroy/ontologies/synthea#"
-        # SYN = Namespace(ONTOLOGY_IRI)
 
     def connect(self):
         self.store = SPARQLUpdateStore()
@@ -23,6 +20,8 @@ class FusekiConnector():
 
     def query(self, query):
         result = self.store.query(query)
+        for row in result:
+            print(f"{row.patient}")
         return result
 
         # query = '''
@@ -33,3 +32,7 @@ class FusekiConnector():
         #       ?patient a syn:Patient.
         #     }
         # '''
+
+class QueryBuilder():
+    # get arguments from the data form
+    pass

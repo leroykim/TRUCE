@@ -13,11 +13,15 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Email configuration
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = ['your-email@example.com']
+    # MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    # MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    # MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    # MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    # MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    # ADMINS = ['your-email@example.com']
 
-    POSTS_PER_PAGE = 3
+    POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE'))
+
+    FUSEKI_URL = "http://localhost:3031/maryland_covid"
+    ONTOLOGY_IRI = "https://knacc.umbc.edu/leroy/ontologies/synthea#"
+    NAMESPACE_ABR = "syn"
