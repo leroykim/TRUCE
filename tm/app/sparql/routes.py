@@ -25,12 +25,8 @@ def query_sparql():
     form = SPARQLForm()
     if form.validate_on_submit():
         flash('SPARQL query has been sent.')
-        query_result = query(form.sparql_query.data)
-        patient_list = []
-        for row in query_result:
-            patient_list.append(str(row.patient))
-        result = '\n'.join(patient_list)
+        result = query(form.sparql_query.data, format='html')
     else:
-        result=None
+        result = None
     return render_template('sparql/sparql.html', title='SPARQL', 
                             form=form, result=result)

@@ -12,16 +12,29 @@
     </div>
 </div>
 <br>
+
+{% if result %}
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <h3 class="panel-title">Result</h3>
+    </div>
+    {{result|safe}}
+</div>
+{% else %}
 <div class="panel panel-info">
     <div class="panel-heading">
-      <h3 class="panel-title">Result</h3>
+        <h3 class="panel-title">Info</h3>
     </div>
     <div class="panel-body">
-        {% if result %}
-            {{result}}
-        {% else %}
-            Submit SPARQL query first.
-        {% endif %}
+        Submit SPARQL query first. <br><br>
+        Example: <br>
+    <pre><code>PREFIX syn: &lt;https://knacc.umbc.edu/leroy/ontologies/synthea#&gt;
+SELECT ?patient 
+WHERE {
+    ?patient a syn:Patient.
+} </code></pre>
     </div>
-  </div>
+</div>
+{% endif %}
+
 {% endblock %}
