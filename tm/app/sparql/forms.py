@@ -14,5 +14,5 @@ class DataForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class SPARQLForm(FlaskForm):
-    sparql_query = TextAreaField("SPARQL Query")
+    sparql_query = TextAreaField("SPARQL Query", render_kw={"rows":30})
     submit = SubmitField('Submit')

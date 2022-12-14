@@ -4,9 +4,10 @@ from flask import render_template, flash, redirect, url_for, request, \
 from flask_login import current_user, login_required
 from app.sparql.forms import DataForm, SPARQLForm
 from app.sparql import bp
+from .fuseki import query
 
-@bp.route('/query', methods=['GET', 'POST'])
-def query():
+@bp.route('/data', methods=['GET', 'POST'])
+def query_data():
     form = DataForm()
     if form.validate_on_submit():
         flash('SPARQL query has been generated.')
@@ -19,12 +20,16 @@ def query():
     return render_template('sparql/data.html', title='DATA', 
                             form=form, selection=selection)
 
-@bp.route('/query_raw', methods=['GET', 'POST'])
-def query_raw():
+@bp.route('/sparql', methods=['GET', 'POST'])
+def query_sparql():
     form = SPARQLForm()
     if form.validate_on_submit():
-        flash('SPARQL query has been generated.')
-        result = f"{form.sparql_query.data}"
+        flash('SPARQL query has been sent.')
+        query_result = query(form.sparql_query.data)
+        patient_list = []
+        for row in query_result:
+            patient_list.append(str(row.patient))
+        result = '\n'.join(patient_list)
     else:
         result=None
     return render_template('sparql/sparql.html', title='SPARQL', 
