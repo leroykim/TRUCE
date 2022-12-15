@@ -3,7 +3,7 @@
 
 {% block app_content %}
 <div class="page-header">
-    <h1>DATA</h1>
+    <h1>PATIENT DATA</h1>
 </div>
 
 <div class="row">
@@ -12,12 +12,12 @@
     </div>
 </div>
 <br>
-{% if selection %}
+{% if result %}
 <div class="panel panel-success">
     <div class="panel-heading">
         <h3 class="panel-title">Result</h3>
     </div>
-    {{selection}}
+    <pre><code>{{result}}</code></pre>
 </div>
 {% else %}
 <div class="panel panel-info">
@@ -28,10 +28,10 @@
         1. Select check box for <code>SELECT</code> variables. <br>
         2. Write condition in <code>SPARQL</code> triples. <br><br>
         Example: <br>
-        Select <code>Age</code> and write <code>?patient a syn:Patient</code>. <br>
+        Select <code>Age</code> and write <code>?patient a syn:Patient .</code><br>
         It will generate <code>SPARQL</code> query like below and send get the results:
         <pre><code>PREFIX syn: &lt;https://knacc.umbc.edu/leroy/ontologies/synthea#&gt;
-SELECT ?patient 
+SELECT ?age 
 WHERE {
     ?patient a syn:Patient.
 } </code></pre>
