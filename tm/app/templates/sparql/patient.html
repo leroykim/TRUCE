@@ -28,13 +28,15 @@
         1. Select check box for <code>SELECT</code> variables. <br>
         2. Write condition in <code>SPARQL</code> triples. <br><br>
         Example: <br>
-        Select <code>Age</code> and write <code>?patient a syn:Patient .</code><br>
+        Select <code>Age</code> and write
+        <code>FILTER (?birthdate > "2000-05-23T10:20:13+05:30"^^xsd:dateTime)</code><br>
         It will generate <code>SPARQL</code> query like below and send get the results:
-        <pre><code>PREFIX syn: &lt;https://knacc.umbc.edu/leroy/ontologies/synthea#&gt;
-SELECT ?age 
+        <pre><code>SELECT ?birthdate
 WHERE {
-    ?patient a syn:Patient.
-} </code></pre>
+?patient a syn:Patient .
+?patient syn:birthdate ?birthdate .
+FILTER (?birthdate > "2000-05-23T10:20:13+05:30"^^xsd:dateTime)
+}</code></pre>
     </div>
 </div>
 {% endif %}
