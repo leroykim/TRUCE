@@ -21,7 +21,7 @@ class QueryFactory():
         query = '\n'.join([self.prefix, self.select, self.where])
         return query
 
-    def get_patient_ask_query(self):
+    def get_ask_patient_query(self):
         self.__set_prefix()
         self.__set_variable_list(get_patient_selection)
         self.__set_patient_where_clause()

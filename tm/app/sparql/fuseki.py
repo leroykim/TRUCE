@@ -4,44 +4,46 @@ from flask import current_app
 from tempfile import NamedTemporaryFile
 from pandas import read_csv
 from tabulate import tabulate
+import json
 
 
-def send_query(sparql_query, format='html'):
-    endpoint = current_app.config['FUSEKI_URL']
-    ontology_iri = current_app.config['ONTOLOGY_IRI']
-    namespace_abbr = current_app.config['NAMESPACE_ABR']
-    namespace = Namespace(ontology_iri)
+class Fuseki():
+    def __init__(self):
+        endpoint = current_app.config['FUSEKI_URL']
+        ontology_iri = current_app.config['ONTOLOGY_IRI']
+        namespace_abbr = current_app.config['NAMESPACE_ABR']
+        namespace = Namespace(ontology_iri)
 
-    store = SPARQLUpdateStore()
-    query_endpoint = f"{endpoint}/query"
-    update_endpoint = f"{endpoint}/update"
-    store.open((query_endpoint, update_endpoint))
-    store.bind(namespace_abbr, namespace)
+        self.store = SPARQLUpdateStore()
+        self.query_endpoint = f"{endpoint}/query"
+        self.update_endpoint = f"{endpoint}/update"
+        self.store.open((self.query_endpoint, self.update_endpoint))
+        self.store.bind(namespace_abbr, namespace)
 
-    result = store.query(sparql_query)
+    def query(self, sparql_query, format='html'):
+        result = self.store.query(sparql_query)
+        if format == 'html':
+            return self.__get_html(result)
+        elif format == 'text':
+            return self.__get_text(result)
+    
+    def ask(self, sparql_query):
+        result = self.store.query(sparql_query)
+        result_json = json.loads(result.serialize(format='json'))
+        return result_json['boolean']
 
-    if format == 'html':
-        return get_html(result)
-    elif format == 'text':
-        return get_text(result)
+    def __get_html(self, result):
+        temp = NamedTemporaryFile()
+        result.serialize(destination=temp.name, format='csv')
+        df = read_csv(temp.name)
+        temp.close()
+        html = df.to_html(classes='table')
+        return html
 
-def ask_query():
-    ...
-
-
-def get_text(result):
-    temp = NamedTemporaryFile()
-    result.serialize(destination=temp.name, format='csv')
-    df = read_csv(temp.name)
-    temp.close()
-    table = tabulate(df, headers='keys', tablefmt='psql')
-    return table
-
-
-def get_html(result):
-    temp = NamedTemporaryFile()
-    result.serialize(destination=temp.name, format='csv')
-    df = read_csv(temp.name)
-    temp.close()
-    html = df.to_html(classes='table')
-    return html
+    def __get_text(self, result):
+        temp = NamedTemporaryFile()
+        result.serialize(destination=temp.name, format='csv')
+        df = read_csv(temp.name)
+        temp.close()
+        table = tabulate(df, headers='keys', tablefmt='psql')
+        return table
