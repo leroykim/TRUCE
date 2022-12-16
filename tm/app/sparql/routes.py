@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from app.sparql.forms import SPARQLForm, PatientDataForm
 from app.sparql import bp
 from .fuseki import send_query
-from .query import get_patient_select_clause, get_where_clause
+from .query import QueryFactory
 
 
 @bp.route('/data', methods=['GET', 'POST'])
@@ -13,13 +13,13 @@ def query_patient():
     form = PatientDataForm()
     if form.validate_on_submit():
         flash('SPARQL query has been generated.')
-        selection = get_patient_select_clause(form)
-        where_clause = get_where_clause(form)
-        complete_query = selection + where_clause
+        factory = QueryFactory(form)
+        query = factory.get_select_patient_query()
+        result = send_query(query)
     else:
-        complete_query = None
+        result = None
     return render_template('sparql/patient.html', title='PATIENT DATA',
-                           form=form, result=complete_query)
+                           form=form, result=result)
 
 
 @bp.route('/sparql', methods=['GET', 'POST'])
