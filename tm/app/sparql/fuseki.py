@@ -25,6 +25,9 @@ def send_query(sparql_query, format='html'):
     elif format == 'text':
         return get_text(result)
 
+def ask_query():
+    ...
+
 
 def get_text(result):
     temp = NamedTemporaryFile()
@@ -42,7 +45,3 @@ def get_html(result):
     temp.close()
     html = df.to_html(classes='table')
     return html
-
-
-def build_query(category, attribs):
-    ...

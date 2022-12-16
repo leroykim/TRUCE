@@ -15,6 +15,7 @@ def query_patient():
         flash('SPARQL query has been generated.')
         factory = QueryFactory(form)
         query = factory.get_select_patient_query()
+        factory.get_patient_ask_query()
         result = send_query(query)
     else:
         result = None
