@@ -20,17 +20,26 @@ class Fuseki():
         self.store.open((self.query_endpoint, self.update_endpoint))
         self.store.bind(namespace_abbr, namespace)
 
+        self.tm_endpoint_list = current_app.config['OTHERS_URL']
+
     def query(self, sparql_query, format='html'):
         result = self.store.query(sparql_query)
         if format == 'html':
             return self.__get_html(result)
         elif format == 'text':
             return self.__get_text(result)
-    
+
     def ask(self, sparql_query):
         result = self.store.query(sparql_query)
         result_json = json.loads(result.serialize(format='json'))
         return result_json['boolean']
+
+    def federated(self, ask_query, select_query):
+        available_endpoint_list = []
+        for endpoint in self.tm_endpoint_list:
+            available = self.ask(ask_query)
+            if available:
+                available_endpoint_list.append(endpoint)
 
     def __get_html(self, result):
         temp = NamedTemporaryFile()

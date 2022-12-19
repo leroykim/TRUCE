@@ -15,6 +15,7 @@ def query_patient():
         flash('SPARQL query has been generated.')
         factory = QueryFactory(form)
         fuseki = Fuseki()
+        ask_query = factory.get_ask_patient_query()
         query = factory.get_select_patient_query()
         result = fuseki.query(query)
     else:
