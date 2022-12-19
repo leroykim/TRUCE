@@ -23,12 +23,13 @@ class Config(object):
     POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE'))
 
     FUSEKI_URL = "http://localhost:3031/maryland_covid"
-    OTHERS_URL = [
-        "http://fuseki-2:3030/maryland_covid",
-        "http://fuseki-3:3030/maryland_covid",
-        "http://fuseki-4:3030/maryland_covid",
-        "http://fuseki-5:3030/maryland_covid"
-    ]
-    PREFIX_LIST = ["syn: <https://knacc.umbc.edu/leroy/ontologies/synthea#>"]
+    REMOTE_URL_DICT = {
+        "http://localhost:3032/maryland_covid":"http://fuseki-2:3030/maryland_covid",
+        "http://localhost:3033/maryland_covid":"http://fuseki-3:3030/maryland_covid",
+        "http://localhost:3034/maryland_covid":"http://fuseki-4:3030/maryland_covid",
+        "http://localhost:3035/maryland_covid":"http://fuseki-5:3030/maryland_covid",
+    }
+    PREFIX_LIST = ["syn: <https://knacc.umbc.edu/leroy/ontologies/synthea#>",
+                    "xsd: <http://www.w3.org/2001/XMLSchema#>"]
     ONTOLOGY_IRI = "https://knacc.umbc.edu/leroy/ontologies/synthea#"
     NAMESPACE_ABR = "syn"

@@ -6,27 +6,27 @@ services:
         image: busybox
         container_name: fuseki_data-1
         volumes: # -v option
-            - /fuseki # this name should be unique in the network
+            - /fuseki-1 # this name should be unique in the network
     fuseki-data-2:
         image: busybox
         container_name: fuseki_data-2
         volumes: 
-            - /fuseki
+            - /fuseki-2
     fuseki-data-3:
         image: busybox
         container_name: fuseki_data-3
         volumes: 
-            - /fuseki
+            - /fuseki-3
     fuseki-data-4:
         image: busybox
         container_name: fuseki_data-4
         volumes: 
-            - /fuseki
+            - /fuseki-4
     fuseki-data-5:
         image: busybox
         container_name: fuseki_data-5
         volumes: 
-            - /fuseki 
+            - /fuseki-5
     
     # Fuseki
     fuseki-1:

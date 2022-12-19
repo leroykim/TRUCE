@@ -20,7 +20,7 @@ class Fuseki():
         self.store.open((self.query_endpoint, self.update_endpoint))
         self.store.bind(namespace_abbr, namespace)
 
-        self.tm_endpoint_list = current_app.config['OTHERS_URL']
+        self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
     def query(self, sparql_query, format='html'):
         result = self.store.query(sparql_query)
@@ -29,17 +29,28 @@ class Fuseki():
         elif format == 'text':
             return self.__get_text(result)
 
-    def ask(self, sparql_query):
-        result = self.store.query(sparql_query)
+    def ask_local(self, ask_query):
+        result = self.store.query(ask_query)
         result_json = json.loads(result.serialize(format='json'))
         return result_json['boolean']
 
-    def federated(self, ask_query, select_query):
-        available_endpoint_list = []
-        for endpoint in self.tm_endpoint_list:
-            available = self.ask(ask_query)
-            if available:
-                available_endpoint_list.append(endpoint)
+    def ask_remote(self, remote_endpoint, ask_query):
+        store = SPARQLUpdateStore()
+        store.open(
+            (f"{remote_endpoint}/query",
+            f"{remote_endpoint}/update")
+            )
+        result = store.query(ask_query)
+        result_json = json.loads(result.serialize(format='json'))
+        return result_json['boolean']
+
+    def ask_all(self, ask_query):
+        result_list = []
+        for endpoint, alias in self.remote_endpoint_list.items():
+            result = self.ask_remote(endpoint, ask_query)
+            if result:
+                result_list.append(alias)
+        return result_list
 
     def __get_html(self, result):
         temp = NamedTemporaryFile()

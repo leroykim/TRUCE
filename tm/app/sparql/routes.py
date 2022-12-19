@@ -13,10 +13,13 @@ def query_patient():
     form = PatientDataForm()
     if form.validate_on_submit():
         flash('SPARQL query has been generated.')
-        factory = QueryFactory(form)
+        factory = QueryFactory(form, "patient")
         fuseki = Fuseki()
-        ask_query = factory.get_ask_patient_query()
-        query = factory.get_select_patient_query()
+        ask_query = factory.ask_patient_query()
+        available_endpoint_list = fuseki.ask_all(ask_query)
+        query = factory.federated_patient_query(available_endpoint_list)
+        print(query)
+        #query = factory.get_select_patient_query()
         result = fuseki.query(query)
     else:
         result = None
