@@ -39,6 +39,7 @@ services:
             - "3031:3030"
         environment: # -e option
             - ADMIN_PASSWORD=umbc_ebiquity
+            - FUSEKI_DATASET_1=covid19
         cap_add:
             - NET_ADMIN
     fuseki-2:
@@ -51,6 +52,7 @@ services:
             - "3032:3030"
         environment: 
             - ADMIN_PASSWORD=umbc_ebiquity
+            - FUSEKI_DATASET_1=covid19
         cap_add:
             - NET_ADMIN
     fuseki-3:
@@ -63,6 +65,7 @@ services:
             - "3033:3030"
         environment: 
             - ADMIN_PASSWORD=umbc_ebiquity
+            - FUSEKI_DATASET_1=covid19
         cap_add:
             - NET_ADMIN
     fuseki-4:
@@ -87,6 +90,7 @@ services:
             - "3035:3030"
         environment: 
             - ADMIN_PASSWORD=umbc_ebiquity
+            - FUSEKI_DATASET_1=covid19
         cap_add:
             - NET_ADMIN
     
