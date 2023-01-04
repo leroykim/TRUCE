@@ -78,6 +78,7 @@ services:
             - "3034:3030"
         environment: 
             - ADMIN_PASSWORD=umbc_ebiquity
+            - FUSEKI_DATASET_1=covid19
         cap_add:
             - NET_ADMIN
     fuseki-5:
