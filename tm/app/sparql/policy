@@ -1,0 +1,5 @@
+from flask_login import current_user
+
+def get_user_info():
+    user_name = current_user.username
+    print(user_name)

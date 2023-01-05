@@ -8,14 +8,15 @@ from app.models import User, Post
 from app.main import bp
 
 
-@bp.before_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
+# @bp.before_request
+# def before_request():
+#     if current_user.is_authenticated:
+#         current_user.last_seen = datetime.utcnow()
+#         db.session.commit()
 
-@bp.route('/', methods=['GET', 'POST'])
-@bp.route('/index', methods=['GET', 'POST'])
+# @bp.route('/', methods=['GET', 'POST'])
+# @bp.route('/index', methods=['GET', 'POST'])
+@bp.route('/home', methods=['GET', 'POST'])
 @login_required
 def index():
     form = PostForm()

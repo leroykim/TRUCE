@@ -7,8 +7,10 @@ from app.sparql import bp
 from .fuseki import Fuseki
 from .query import QueryFactory
 
-
+@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/index', methods=['GET', 'POST'])
 @bp.route('/data', methods=['GET', 'POST'])
+@login_required
 def query_patient():
     form = PatientDataForm()
     if form.validate_on_submit():
@@ -18,8 +20,6 @@ def query_patient():
         ask_query = factory.ask_patient_query()
         available_endpoint_list = fuseki.ask_all(ask_query)
         query = factory.federated_patient_query(available_endpoint_list)
-        print(query)
-        #query = factory.get_select_patient_query()
         result = fuseki.query(query)
     else:
         result = None
@@ -28,6 +28,7 @@ def query_patient():
 
 
 @bp.route('/sparql', methods=['GET', 'POST'])
+@login_required
 def query_sparql():
     form = SPARQLForm()
     if form.validate_on_submit():

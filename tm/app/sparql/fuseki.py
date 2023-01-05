@@ -25,9 +25,11 @@ class Fuseki():
     def query(self, sparql_query, format='html'):
         result = self.store.query(sparql_query)
         if format == 'html':
-            return self.__get_html(result)
+            result = self.__get_html(result)
         elif format == 'text':
-            return self.__get_text(result)
+            result = self.__get_text(result)
+        current_app.logger.info(f"Result:\n{result}")
+        return result
 
     def ask_local(self, ask_query):
         result = self.store.query(ask_query)
@@ -50,6 +52,7 @@ class Fuseki():
             result = self.ask_remote(endpoint, ask_query)
             if result:
                 result_list.append(alias)
+        current_app.logger.info(f"Available URL list:\n{result_list}")
         return result_list
 
     def __get_html(self, result):

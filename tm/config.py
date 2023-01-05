@@ -22,12 +22,12 @@ class Config(object):
 
     POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE'))
 
-    FUSEKI_URL = "http://localhost:3031/maryland_covid"
+    FUSEKI_URL = "http://localhost:3031/covid19"
     REMOTE_URL_DICT = {
-        "http://localhost:3032/maryland_covid":"http://fuseki-2:3030/maryland_covid",
-        "http://localhost:3033/maryland_covid":"http://fuseki-3:3030/maryland_covid",
-        "http://localhost:3034/maryland_covid":"http://fuseki-4:3030/maryland_covid",
-        "http://localhost:3035/maryland_covid":"http://fuseki-5:3030/maryland_covid",
+        "http://localhost:3032/covid19":"http://fuseki-2:3030/covid19",
+        "http://localhost:3033/covid19":"http://fuseki-3:3030/covid19",
+        "http://localhost:3034/covid19":"http://fuseki-4:3030/covid19",
+        "http://localhost:3035/covid19":"http://fuseki-5:3030/covid19",
     }
     PREFIX_LIST = ["syn: <https://knacc.umbc.edu/leroy/ontologies/synthea#>",
                     "xsd: <http://www.w3.org/2001/XMLSchema#>"]

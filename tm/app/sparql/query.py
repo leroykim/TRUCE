@@ -21,6 +21,7 @@ class QueryFactory():
 
     def ask_patient_query(self):
         query = '\n'.join([self.prefix, "ASK", self.where])
+        current_app.logger.info(f"\n{query}")
         return query
 
     def federated_patient_query(self, endpoint_list):
@@ -33,6 +34,7 @@ class QueryFactory():
             self.select, 
             self.__wrap_where(self.federated)
             ])
+        current_app.logger.info(f"\n{query}")
         return query
 
     def __get_prefix(self):
