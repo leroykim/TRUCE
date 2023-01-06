@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://knacc.umbc.edu/leroy/ontologies/trust#"
+     xml:base="https://knacc.umbc.edu/leroy/ontologies/trust"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:trust="https://knacc.umbc.edu/leroy/ontologies/trust#">
+    <owl:Ontology rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust">
+        <owl:versionIRI rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust/0.1"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#behavior -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#behavior">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#trust"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#User"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#clearance_level -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#clearance_level">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#identity"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#User"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#creation_time -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#creation_time">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#provenance"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#credibility -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#credibility">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#veracity"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#identity -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#identity">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#trust"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#location -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#location">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#provenance"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#objectivity -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#objectivity">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#veracity"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#provenance -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#provenance">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#trust"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#purpose -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#purpose">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#provenance"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#reputation -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#reputation">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#identity"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Organization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#source -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#source">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#provenance"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#trust -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#trust">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#trustfulness -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#trustfulness">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#veracity"/>
+        <rdfs:domain rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#veracity -->
+
+    <owl:DatatypeProperty rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#veracity">
+        <rdfs:subPropertyOf rdf:resource="https://knacc.umbc.edu/leroy/ontologies/trust#trust"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#Data -->
+
+    <owl:Class rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#Data">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Put domain specific data ontology under this Data class.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#Organization -->
+
+    <owl:Class rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#Organization"/>
+    
+
+
+    <!-- https://knacc.umbc.edu/leroy/ontologies/trust#User -->
+
+    <owl:Class rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#User"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#Data"/>
+            <rdf:Description rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#Organization"/>
+            <rdf:Description rdf:about="https://knacc.umbc.edu/leroy/ontologies/trust#User"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
