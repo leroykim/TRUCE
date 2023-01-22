@@ -24,11 +24,15 @@ class Fuseki():
 
     def query(self, sparql_query, format='html'):
         result = self.store.query(sparql_query)
+        #current_app.logger.info(json.loads(result.serialize(format='json')))
         if format == 'html':
             result = self.__get_html(result)
         elif format == 'text':
             result = self.__get_text(result)
-        current_app.logger.info(f"Result:\n{result}")
+        elif format == 'json':
+            result = json.loads(result.serialize(format='json'))
+
+        #current_app.logger.info(f"Result:\n{result}")
         return result
 
     def ask_local(self, ask_query):

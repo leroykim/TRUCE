@@ -1,6 +1,6 @@
 from app.sparql.forms import PatientDataForm
 
-def get_patient_selection(form: PatientDataForm):
+def get_patient_variables(form: PatientDataForm) -> dict:
     patient_selection_dict = {}
     patient_selection_dict["address"] = form.address.data
     patient_selection_dict["birthdate"] = form.birthdate.data
@@ -27,3 +27,15 @@ def get_patient_selection(form: PatientDataForm):
     patient_selection_dict["zip"] = form.zip.data
 
     return patient_selection_dict
+
+def get_score_weights(form: PatientDataForm) -> dict:
+    score_weights = {}
+    score_weights["identity"] = float(form.identity.data)
+    score_weights["behavior"] = float(form.behavior.data)
+    score_weights["credibility"] = float(form.credibility.data)
+    score_weights["objectivity"] = float(form.objectivity.data)
+    score_weights["trustfulness"] = float(form.trustfulness.data)
+    score_weights["trust_threshold"] = float(form.trust_threshold.data)
+    score_weights["veracity_threshold"] = float(form.veracity_threshold.data)
+
+    return score_weights

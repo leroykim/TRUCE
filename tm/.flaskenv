@@ -2,4 +2,3 @@ FLASK_APP=trusted_middleware.py
 FLASK_DEBUG=true
 MAIL_SERVER=localhost
 MAIL_PORT=8025
-POSTS_PER_PAGE=3

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, BooleanField, TextAreaField
+from wtforms import SubmitField, SelectField, BooleanField, TextAreaField, StringField
 
 
 class DataForm(FlaskForm):
@@ -43,6 +43,29 @@ class PatientDataForm(FlaskForm):
     state = BooleanField('State')
     zip = BooleanField('zip')
 
-    sparql_query = TextAreaField("SPARQL Query", render_kw={"rows": 15})
+    sparql_query = TextAreaField("SPARQL Query", render_kw={"rows": 11})
+
+    # User trust Score
+    identity = StringField('Identity Trust', default="0.5")
+    behavior = StringField('Behavioral Trust', default="0.5")
+    trust_threshold = StringField('Threshold', default="0.5")
+    #Veracity
+    credibility = StringField('Credibility', default="0.3")
+    objectivity = StringField('Objectivity',default="0.3")
+    trustfulness = StringField('Trustfulness', default="0.4")
+    veracity_threshold = StringField('Threshold', default="0.5")
 
     submit = SubmitField('Submit')
+
+# class SettingForm(FlaskForm):
+#     # User trust Score
+#     identity = StringField('Identity Trust')
+#     behavior = StringField('Behavioral Trust')
+#     trust_threshold = StringField('Threshold')
+#     #Veracity
+#     credibility = StringField('Credibility')
+#     objectivity = StringField('Objectivity')
+#     trustfulness = StringField('Trustfulness')
+#     veracity_threshold = StringField('Threshold')
+    
+#     submit = SubmitField('Save')

@@ -1,8 +1,15 @@
 import os
 from dotenv import load_dotenv
+import json
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
+
+'''
+While the .env and .flaskenv files are similar, Flask expects its own
+configuration variables to be in .flaskenv, while application configuration 
+variables (including some that can be of a sensitive nature) to be in .env.
+'''
 
 
 class Config(object):
@@ -12,24 +19,10 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Email configuration
-    # MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    # MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
-    # MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
-    # MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    # MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    # ADMINS = ['your-email@example.com']
-
     POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE'))
 
-    FUSEKI_URL = "http://localhost:3031/covid19"
-    REMOTE_URL_DICT = {
-        "http://localhost:3032/covid19":"http://fuseki-2:3030/covid19",
-        "http://localhost:3033/covid19":"http://fuseki-3:3030/covid19",
-        "http://localhost:3034/covid19":"http://fuseki-4:3030/covid19",
-        "http://localhost:3035/covid19":"http://fuseki-5:3030/covid19",
-    }
-    PREFIX_LIST = ["syn: <https://knacc.umbc.edu/leroy/ontologies/synthea#>",
-                    "xsd: <http://www.w3.org/2001/XMLSchema#>"]
-    ONTOLOGY_IRI = "https://knacc.umbc.edu/leroy/ontologies/synthea#"
-    NAMESPACE_ABR = "syn"
+    FUSEKI_URL = os.environ.get('FUSEKI_URL')
+    REMOTE_URL_DICT = json.loads(os.environ.get('REMOTE_URL_DICT').replace("\'", "\""))
+    PREFIX_LIST = json.loads(os.environ.get('PREFIX_LIST').replace("\'", "\""))
+    ONTOLOGY_IRI = os.environ.get("ONTOLOGY_IRI")
+    NAMESPACE_ABR = os.environ.get("NAMESPACE_ABR")

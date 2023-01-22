@@ -1,108 +1,124 @@
 from flask_wtf import FlaskForm
 from flask import current_app
-from .formdata import get_patient_selection
-from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple
-
+from .policy import PolicyManager
+from .formdata import get_patient_variables
 
 class QueryFactory():
-    def __init__(self, form: FlaskForm, type: str, distinct=True):
+    def __init__(self, form: FlaskForm, data_class: str):
         self.form = form
         self.user_query = form.sparql_query.data
-        self.prefix = self.__get_prefix()
-        if type.lower() == "patient":
-            self.variable_list = self.__get_variable_list(get_patient_selection)
-        self.select = self.__get_select_clause(type)
-        self.where = self.__get_where_clause(type)
-        self.federated = None
+        self.variables = get_variables(form)
+        self.policy_manager = PolicyManager(form=form)
+        self.data_class = data_class
 
-    def select_patient_query(self):
-        query = '\n'.join([self.prefix, self.select, self.where])
+    def get_select_query(self):
+        prefix = get_prefix()
+        select = get_select_clause(data_class=self.data_class, variables=self.variables)
+        where = get_where_clause(data_class=self.data_class, sparql_query=self.user_query)
+        query = '\n'.join([prefix, select, where])
         return query
 
-    def ask_patient_query(self):
-        query = '\n'.join([self.prefix, "ASK", self.where])
-        current_app.logger.info(f"\n{query}")
+    def get_ask_query(self):
+        prefix = get_prefix()
+        where = get_where_clause(
+            data_class=self.data_class, variables=self.variables, sparql_query=self.user_query)
+        query = '\n'.join([prefix, "ASK", where])
+        # current_app.logger.info(f"\n{query}")
         return query
 
-    def federated_patient_query(self, endpoint_list):
+    def get_federated_query(self, endpoint_list, policy=False):
         if endpoint_list is None:
             print("endpoint_list is empty")
             return
-        self.__set_federated_clause(endpoint_list, "patient")
+        if policy:
+            # This part should be changed later when many policies are defined.
+            policies = [self.policy_manager.get_trust_policy()]
+        federated = get_federated_clause(
+            endpoints=endpoint_list, data_class=self.data_class, variables=self.variables, sparql_query=self.user_query, policies=policies)
+        prefix = get_prefix()
+        select = get_select_clause(data_class=self.data_class, variables=self.variables)
         query = '\n'.join([
-            self.prefix,
-            self.select, 
-            self.__wrap_where(self.federated)
-            ])
+            prefix,
+            select,
+            wrap_where(federated)
+        ])
         current_app.logger.info(f"\n{query}")
         return query
 
-    def __get_prefix(self):
-        prefix_list = list(current_app.config['PREFIX_LIST'])
-        return '\n'.join(["PREFIX " + i for i in prefix_list])
 
-    def __get_variable_list(self, func):
-        selection = func(self.form)
-        variable_list = []
-        for key, value in selection.items():
-            if value:
-                variable_list.append(key)
-        return variable_list
-
-    def __get_select_clause(self, type: str, distinct=True):
-        sparql_variable_list = [f"?{type.lower()}"]
-        sparql_variable_list.extend(["?" + i for i in self.variable_list])
-        if distinct:
-            return f"SELECT DISTINCT " + ' '.join(sparql_variable_list)
-        else:
-            return f"SELECT " + ' '.join(sparql_variable_list)
-
-    def __get_where_clause(self, type: str):
-        """Creates WHERE clause for non-federated query
-
-        Args:
-            type: type of the data. E.g. syn:Patient, syn:Encounter, ...
-        """
-        triples = self.__get_triples(type)
-        return self.__wrap_where(triples)
+def get_prefix() -> str:
+    prefix_list = list(current_app.config['PREFIX_LIST'])
+    return '\n'.join(["PREFIX " + i for i in prefix_list])
 
 
-    def __set_federated_clause(self, endpoint_list: list, type: str):
-        """Creates federated clause of SPARQL query consists of UNION and SERVI-
-        CE clauses
+def get_variables(form: FlaskForm) -> list:
+    form_data = get_patient_variables(form)
+    variable_list = []
+    for key, value in form_data.items():
+        if value:
+            variable_list.append(key)
+    return variable_list
 
-        Args:
-            endpoint_list: list of endpoints that have desired data.
 
-        """
-        triples = self.__get_triples(type)
-        federated_clause = '\n'.join(['{', triples, '}'])
-        for endpoint in endpoint_list:
-            federated_clause += self.__union_service_pattern(endpoint, triples)
-        self.federated = federated_clause
+def get_select_clause(data_class: str, variables: list, distinct=True, additional_variables: list = None) -> str:
+    sparql_variable_list = [f"?{data_class.lower()}"]
+    sparql_variable_list.extend(["?" + i for i in variables])
+    if additional_variables is not None:
+        sparql_variable_list.extend(additional_variables)
+    if distinct:
+        return f"SELECT DISTINCT " + ' '.join(sparql_variable_list)
+    else:
+        return f"SELECT " + ' '.join(sparql_variable_list)
 
-    def __get_triples(self, type:str):
-        sparql_query = self.user_query
-        variable_triple_list = [
-            f"?{type.lower()} syn:{i} ?{i} ." for i in self.variable_list]
-        variable_triple_string = '\n'.join(variable_triple_list)
-        triples = '\n'.join([
-            f"?{type.lower()} a syn:{type.capitalize()} .",
-            variable_triple_string,
-            sparql_query,
-        ])
-        return triples
 
-    def __union_service_pattern(self, endpoint: str, triples: str):
-        pattern = '\n'.join([
-            "UNION {",
-            f"SERVICE <{endpoint}> {{",
-            triples,
-            "}}", ])
-        return pattern
+def get_triples(data_class: str, variables: list, sparql_query: str) -> str:
+    variable_triple_list = [
+        f"?{data_class.lower()} syn:{i} ?{i} ." for i in variables]
+    variable_triple_string = '\n'.join(variable_triple_list)
+    triples = '\n'.join([
+        f"?{data_class.lower()} a syn:{data_class.capitalize()} .",
+        variable_triple_string,
+        sparql_query,
+    ])
+    return triples
 
-    def __wrap_where(self, triples:str):
-        return '\n'.join(['WHERE {', triples, '}'])
 
-    def get_policy():
-        ...
+def get_where_clause(data_class: str, variables: list, sparql_query: str, policy=False):
+    """Creates WHERE clause for non-federated query
+
+    Args:
+        data_class: class of the data. E.g. syn:Patient, syn:Encounter, ...
+    """
+    return wrap_where(get_triples(data_class=data_class, variables=variables, sparql_query=sparql_query))
+
+
+def get_federated_clause(endpoints: list, data_class: str, variables: list, sparql_query: str, policies: list = None):
+    """Creates federated clause of SPARQL query consists of UNION and SERVI-
+    CE clauses
+
+    Args:
+        endpoint_list: list of endpoints that have desired data.
+
+    """
+    triples = get_triples(data_class=data_class, variables=variables,
+                          sparql_query=sparql_query)
+    federated_clause = '\n'.join(['{', triples, '}'])
+    for endpoint in endpoints:
+        federated_clause += wrap_union_service(endpoint, triples)
+    if policies:
+        for policy in policies:
+            federated_clause = '\n'.join([federated_clause, policy])
+    return federated_clause
+
+
+def wrap_where(triples: str) -> str:
+    return '\n'.join(['WHERE {', triples, '}'])
+
+
+def wrap_union_service(endpoint: str, triples: str) -> str:
+    pattern = '\n'.join([
+        "UNION {",
+        f"SERVICE <{endpoint}> {{",
+        triples,
+        "}}", ])
+    return pattern
