@@ -1,6 +1,6 @@
+import time
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, current_app
-from flask_login import login_required
 from app.sparql.forms import SPARQLForm, PatientDataForm
 from app.sparql import bp
 from .fuseki import Fuseki
@@ -10,28 +10,37 @@ from .user import UserInfo
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 @bp.route('/data', methods=['GET', 'POST'])
-@login_required
 def query_patient():
     form = PatientDataForm()
     if form.validate_on_submit():
         flash('SPARQL query has been sent.')
-        patient_query_factory = QueryFactory(form=form, data_class="patient")
-        fuseki = Fuseki()
-        ask_query = patient_query_factory.get_ask_query()
-        available_endpoint_list = fuseki.ask_all(ask_query)
-        
-        user_info = UserInfo()
 
-        query = patient_query_factory.get_federated_query(available_endpoint_list, policy=True)
+        st = time.time()
+        query_factory = QueryFactory(form=form, data_class="patient")
+        fuseki = Fuseki()
+        # ask_query = query_factory.get_ask_query()
+        # available_endpoint_list = fuseki.ask_all(ask_query)
+        # query = query_factory.get_federated_query(available_endpoint_list)
+        query = query_factory.get_select_query()
         result = fuseki.query(query)
+        et = time.time()
+        elapsed_time = et-st
+
+        # For informations
+        user_info = UserInfo()
+        user_trust_score = f"{user_info.individual_id}'s identity score: {user_info.get_identity_score()} & behavior score: {user_info.get_behavior_score()}, query elapsed time: {elapsed_time} seconds"
+        query_for_html = query.replace("<", "&lt;").replace(">","&gt;")
     else:
         result = None
+        query = None
+        query_for_html = None
+        user_trust_score = None
+        
     return render_template('sparql/patient.html', title='PATIENT DATA',
-                           form=form, result=result)
+                           form=form, result=result, query=query_for_html, user_trust_score = user_trust_score)
 
 
 @bp.route('/sparql', methods=['GET', 'POST'])
-@login_required
 def query_sparql():
     form = SPARQLForm()
     if form.validate_on_submit():

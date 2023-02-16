@@ -2,75 +2,115 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<div class="page-header">
-    <h2>PATIENT DATA</h2>
-</div>
 <form class="form" method="POST">
     {{ form.hidden_tag() }}
-    <div class="row">
-        <div class="col-md-3">
-            {{ wtf.form_field(form.address) }}
-            {{ wtf.form_field(form.birthdate) }}
-            {{ wtf.form_field(form.birthplace) }}
-            {{ wtf.form_field(form.city) }}
-            {{ wtf.form_field(form.county) }}
-            {{ wtf.form_field(form.deathdate) }}
-            {{ wtf.form_field(form.drivers) }}
-            {{ wtf.form_field(form.ethnicity) }}
-            {{ wtf.form_field(form.firstname) }}
-            {{ wtf.form_field(form.gender) }}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>PATIENT DATA</h5>
+                <div class="col-md-5" style="padding-right: 0px; padding-left: 0px;">
+                    {{ wtf.form_field(form.address) }}
+                    {{ wtf.form_field(form.birthdate) }}
+                    {{ wtf.form_field(form.birthplace) }}
+                    {{ wtf.form_field(form.city) }}
+                    {{ wtf.form_field(form.county) }}
+                    {{ wtf.form_field(form.deathdate) }}
+                    {{ wtf.form_field(form.drivers) }}
+                    {{ wtf.form_field(form.ethnicity) }}
+                    {{ wtf.form_field(form.firstname) }}
+                    {{ wtf.form_field(form.gender) }}
+                </div>
+                <div class="col-md-6" style="padding-right: 0px; padding-left: 0px;">
+                    {{ wtf.form_field(form.healthcare_coverage) }}
+                    {{ wtf.form_field(form.healthcare_expenses) }}
+                    {{ wtf.form_field(form.id_) }}
+                    {{ wtf.form_field(form.income) }}
+                    {{ wtf.form_field(form.lastname) }}
+                    {{ wtf.form_field(form.marital) }}
+                    {{ wtf.form_field(form.passport) }}
+                    {{ wtf.form_field(form.race) }}
+                    {{ wtf.form_field(form.state) }}
+                    {{ wtf.form_field(form.zip) }}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h5>OBSERVATION DATA</h5>
+                <div class="col-md-12" style="padding-right: 5px; padding-left: 5px;">
+                    {{ wtf.form_field(form.observation_date) }}
+                    {{ wtf.form_field(form.observed_patient) }}
+                    {{ wtf.form_field(form.observation_category) }}
+                    {{ wtf.form_field(form.observation_code) }}
+                    {{ wtf.form_field(form.observation_description) }}
+                    {{ wtf.form_field(form.observation_value) }}
+                    {{ wtf.form_field(form.observation_units) }}
+                    {{ wtf.form_field(form.observation_type) }}
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ wtf.form_field(form.apply_trust_score) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ wtf.form_field(form.identity)}}
+                    </div>
+                    <div class="col-md-4">
+                        {{ wtf.form_field(form.behavior)}}
+                    </div>
+                    <div class="col-md-4">
+                        {{ wtf.form_field(form.trust_threshold)}}
+                    </div>
+                </div>
+                <hr class="solid">
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ wtf.form_field(form.apply_veracity_score)}}
+                    </div>
+                    <div class="col-md-3">
+                        {{ wtf.form_field(form.credibility)}}
+                    </div>
+                    <div class="col-md-3">
+                        {{ wtf.form_field(form.objectivity)}}
+                    </div>
+                    <div class="col-md-3">
+                        {{ wtf.form_field(form.trustfulness)}}
+                    </div>
+                    <div class="col-md-3">
+                        {{ wtf.form_field(form.veracity_threshold)}}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-3">
-            {{ wtf.form_field(form.healthcare_coverage) }}
-            {{ wtf.form_field(form.healthcare_expenses) }}
-            {{ wtf.form_field(form.id_) }}
-            {{ wtf.form_field(form.income) }}
-            {{ wtf.form_field(form.lastname) }}
-            {{ wtf.form_field(form.marital) }}
-            {{ wtf.form_field(form.passport) }}
-            {{ wtf.form_field(form.race) }}
-            {{ wtf.form_field(form.state) }}
-            {{ wtf.form_field(form.zip) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ wtf.form_field(form.sparql_query) }}
+            </div>
         </div>
-        <div class="col-md-6">
-            {{ wtf.form_field(form.sparql_query) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ wtf.form_field(form.limit)}}
+            </div>
         </div>
         <div class="col-md-12">
-        
-            <h4><span class="label label-primary">USER TRUST SCORE WEIGHTS</span></h4>
-            <br>
-            <div class="col-md-4">
-                {{ wtf.form_field(form.identity)}}
+            <div class="col-md-6 text-right">
+                {{ wtf.form_field(form.submit) }}
             </div>
-            <div class="col-md-4">
-                {{ wtf.form_field(form.behavior)}}
-            </div>
-            <div class="col-md-4">
-                {{ wtf.form_field(form.trust_threshold)}}
-            </div>
-        </div>
-        <div class="col-md-12">
-            <h4><span class="label label-success">VERACITY SCORE WEIGHTS</span></h4>
-            <br>
-            <div class="col-md-3">
-                {{ wtf.form_field(form.credibility)}}
-            </div>
-            <div class="col-md-3">
-                {{ wtf.form_field(form.objectivity)}}
-            </div>
-            <div class="col-md-3">
-                {{ wtf.form_field(form.trustfulness)}}
-            </div>
-            <div class="col-md-3">
-                {{ wtf.form_field(form.veracity_threshold)}}
-            </div>
-        </div>
-        <div class="col-md-6 text-right">
-            {{ wtf.form_field(form.submit) }}
         </div>
     </div>
 </form>
 <br>
+
+{% if user_trust_score %}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">Info</h3>
+    </div>
+    <div class="panel-body">
+        <pre>{{user_trust_score|safe}}</pre>
+    </div>
+</div>
+{% endif %}
+
 {% if result %}
 <div class="panel panel-success">
     <div class="panel-heading">
@@ -87,7 +127,7 @@
         1. Select check box for <code>SELECT</code> variables. <br>
         2. Write condition in <code>SPARQL</code> triples. <br><br>
         Example: <br>
-        Select <code>Age</code> and write
+        Select <code>Birth Date</code> and write
         <code>FILTER (?birthdate > "2000-05-23T10:20:13+05:30"^^xsd:dateTime)</code><br>
         It will generate <code>SPARQL</code> query like below and send get the results:
         <pre><code>SELECT ?birthdate
@@ -99,5 +139,16 @@ FILTER (?birthdate > "2000-05-23T10:20:13+05:30"^^xsd:dateTime)
     </div>
 </div>
 {% endif %}
+
+{% if query %}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">Query</h3>
+    </div>
+    <div class="panel-body">
+        <pre>{{query|safe}}</pre>
+    </div>
+</div>
+{% endif%}
 
 {% endblock %}

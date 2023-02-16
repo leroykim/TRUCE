@@ -1,4 +1,3 @@
-from flask_login import current_user
 from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import Prefix, Triple, SPARQLSelectQuery, SPARQLGraphPattern
 from .fuseki import Fuseki
@@ -6,16 +5,11 @@ from .fuseki import Fuseki
 class UserInfo():
     def __init__(self):
         self.fuseki = Fuseki()
-
-        self.user_name = current_user.username
-        self.user_type = current_user.type
-        self.user_id = current_user.user_id
-        self.individual_id = f"syn:{self.user_type}_{self.user_id}"
+        self.individual_id = current_app.config['INDIVIDUAL_ID']
+        self.user_type = current_app.config['INDIVIDUAL_TYPE']
         self.identity_trust = None
         self.behavioral_trust = None
-
-        current_app.logger.info(f"User name = {self.user_name}")
-        current_app.logger.info(f"User individual name = {self.individual_id}")
+        current_app.logger.info(f"User individual id = {self.individual_id}")
 
         self.__get_trust_score()
 
@@ -33,16 +27,13 @@ class UserInfo():
 
     def get_trust_triples(self):
         where_clause = self.__get_trust_where_pattern().get_text()
-        where_clause = where_clause.replace('   ','')
-        where_clause = where_clause.replace('{','')
-        where_clause = where_clause.replace('}','')
-        return where_clause.strip()
+        return self.__strip_curly_brackets(where_clause)
 
     def __get_trust_where_pattern(self):
         where_pattern = SPARQLGraphPattern()
         where_pattern.add_triples(
             triples=[
-                Triple(subject=self.individual_id, predicate="a", object=f"syn:{self.user_type.capitalize()}"),
+                Triple(subject=self.individual_id, predicate="a", object=f"syn:{self.user_type}"),
                 Triple(subject=self.individual_id, predicate="tst:identity", object="?identity_trust"),
                 Triple(subject=self.individual_id, predicate="tst:behavior", object="?behavioral_trust"),
             ]
@@ -51,6 +42,7 @@ class UserInfo():
 
     def __get_trust_score(self):
         query = self.__get_trust_query()
+        current_app.logger.info(query)
         user_info = self.fuseki.query(query, format='json')
 
         bindings = user_info["results"]["bindings"][0]
@@ -74,3 +66,9 @@ class UserInfo():
         select_query.set_where_pattern(graph_pattern=where_pattern)
 
         return select_query.get_text()
+
+    def __strip_curly_brackets(self, clause: str):
+        clause = clause.replace('   ','')
+        clause = clause.replace('{','')
+        clause = clause.replace('}','')
+        return clause.strip()

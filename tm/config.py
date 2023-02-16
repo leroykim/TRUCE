@@ -26,3 +26,5 @@ class Config(object):
     PREFIX_LIST = json.loads(os.environ.get('PREFIX_LIST').replace("\'", "\""))
     ONTOLOGY_IRI = os.environ.get("ONTOLOGY_IRI")
     NAMESPACE_ABR = os.environ.get("NAMESPACE_ABR")
+    INDIVIDUAL_ID = os.environ.get("INDIVIDUAL_ID")
+    INDIVIDUAL_TYPE = os.environ.get("INDIVIDUAL_TYPE")

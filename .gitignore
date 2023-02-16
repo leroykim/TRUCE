@@ -1,3 +1,8 @@
+# Trusted Middleware Project Specific
+*.log.*
+*.ttl
+test_data/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -129,3 +134,10 @@ dmypy.json
 .pyre/
 
 tm/app.db
+v.sh
+ontology/file_manager.ipynb
+test_data/file_manager.ipynb
+test_data/fuseki-management.ipynb
+ontology/file_manager.ipynb
+ontology/file_manager.ipynb
+test_data/fuseki-management.ipynb
