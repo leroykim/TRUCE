@@ -1,4 +1,4 @@
-from app.sparql.forms import PatientDataForm, DataCategoryForm
+from app.sparql.forms import DataCategoryForm
 
 
 def get_data_category(form: DataCategoryForm) -> dict:
@@ -25,7 +25,7 @@ def get_data_category(form: DataCategoryForm) -> dict:
     return data_category
 
 
-def get_score_weights(form: PatientDataForm) -> dict:
+def get_score_weights(form: DataCategoryForm) -> dict:
     score_weights = {}
     score_weights["identity"] = float(form.identity.data)
     score_weights["behavior"] = float(form.behavior.data)
@@ -42,7 +42,7 @@ def get_score_weights(form: PatientDataForm) -> dict:
     return score_weights
 
 
-def get_limit(form: PatientDataForm) -> int:
+def get_limit(form: DataCategoryForm) -> int:
     return int(form.limit.data)
 
 

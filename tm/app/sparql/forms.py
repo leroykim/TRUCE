@@ -3,6 +3,10 @@ from wtforms import SubmitField, BooleanField, TextAreaField, StringField
 
 
 class DataCategoryForm(FlaskForm):
+    ###################
+    # Data Categories #
+    ###################
+
     allergy = BooleanField("Allergy")
     care_plan = BooleanField("Care Plan")
     claim = BooleanField("Claim")
@@ -21,6 +25,42 @@ class DataCategoryForm(FlaskForm):
     procedure = BooleanField("Procedure")
     provider = BooleanField("Provider")
     supply = BooleanField("Supply")
+
+    ######################
+    # User Trust Weights #
+    ######################
+
+    identity = StringField("Identity Trust", default="0.5")
+    behavior = StringField("Behavioral Trust", default="0.5")
+    trust_threshold = StringField("Threshold", default="0.5")
+    apply_trust_score = BooleanField(
+        "USER TRUST SCORE WEIGHTS", default="checked", render_kw={"style": "font-weight: bold;"}
+    )
+
+    #########################
+    # Data Veracity Weights #
+    #########################
+
+    credibility = StringField("Credibility", default="0.3")
+    objectivity = StringField("Objectivity", default="0.3")
+    trustfulness = StringField("Trustfulness", default="0.4")
+    veracity_threshold = StringField("Threshold", default="0.5")
+    apply_veracity_score = BooleanField("DATA VERACITY SCORE WEIGHTS", default="checked")
+
+    ############################
+    # CONDITION QUERY (SPARQL) #
+    ############################
+
+    default_query = 'FILTER (?birthdate > xsd:dateTime("2000-05-23T10:20:13+05:30"))'
+    sparql_query = TextAreaField("Condition Query", render_kw={"rows": "11"}, default=default_query)
+
+    ##########
+    # LIMITS #
+    ##########
+
+    limit = StringField("LIMIT", default=30)
+
+    submit = SubmitField("Submit")
 
 
 class SPARQLForm(FlaskForm):
@@ -66,42 +106,6 @@ class SPARQLForm(FlaskForm):
 #     observation_value = BooleanField("Value")
 #     observation_units = BooleanField("Units")
 #     observation_type = BooleanField("Type")
-
-#     ######################
-#     # User Trust Weights #
-#     ######################
-
-#     identity = StringField("Identity Trust", default="0.5")
-#     behavior = StringField("Behavioral Trust", default="0.5")
-#     trust_threshold = StringField("Threshold", default="0.5")
-#     apply_trust_score = BooleanField(
-#         "USER TRUST SCORE WEIGHTS", default="checked", render_kw={"style": "font-weight: bold;"}
-#     )
-
-#     #########################
-#     # Data Veracity Weights #
-#     #########################
-
-#     credibility = StringField("Credibility", default="0.3")
-#     objectivity = StringField("Objectivity", default="0.3")
-#     trustfulness = StringField("Trustfulness", default="0.4")
-#     veracity_threshold = StringField("Threshold", default="0.5")
-#     apply_veracity_score = BooleanField("DATA VERACITY SCORE WEIGHTS", default="checked")
-
-#     ############################
-#     # CONDITION QUERY (SPARQL) #
-#     ############################
-
-#     default_query = 'FILTER (?birthdate > xsd:dateTime("2000-05-23T10:20:13+05:30"))'
-#     sparql_query = TextAreaField("CONDITION QUERY", render_kw={"rows": "11"}, default=default_query)
-
-#     ##########
-#     # LIMITS #
-#     ##########
-
-#     limit = StringField("LIMIT", default=30)
-
-#     submit = SubmitField("Submit")
 
 
 # class SettingForm(FlaskForm):

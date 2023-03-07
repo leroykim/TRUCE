@@ -6,47 +6,38 @@
     {{ form.hidden_tag() }}
     <div class="container-fluid">
         <div class="row">
+            <h4>Data Description</h4>
             <div class="col-md-4">
-                <h5>PATIENT DATA</h5>
-                <div class="col-md-5" style="padding-right: 0px; padding-left: 0px;">
-                    {{ wtf.form_field(form.address) }}
-                    {{ wtf.form_field(form.birthdate) }}
-                    {{ wtf.form_field(form.birthplace) }}
-                    {{ wtf.form_field(form.city) }}
-                    {{ wtf.form_field(form.county) }}
-                    {{ wtf.form_field(form.deathdate) }}
-                    {{ wtf.form_field(form.drivers) }}
-                    {{ wtf.form_field(form.ethnicity) }}
-                    {{ wtf.form_field(form.firstname) }}
-                    {{ wtf.form_field(form.gender) }}
+                <div class="col-md-6" style="padding-right: 0px; padding-left: 0px;">
+                    {{ wtf.form_field(form.allergy) }}
+                    {{ wtf.form_field(form.care_plan)}}
+                    {{ wtf.form_field(form.claim)}}
+                    {{ wtf.form_field(form.claim_transaction)}}
+                    {{ wtf.form_field(form.condition)}}
+                    {{ wtf.form_field(form.device)}}
+                    {{ wtf.form_field(form.encounter)}}
+                    {{ wtf.form_field(form.imaging_study)}}
+                    {{ wtf.form_field(form.immunization)}}
                 </div>
                 <div class="col-md-6" style="padding-right: 0px; padding-left: 0px;">
-                    {{ wtf.form_field(form.healthcare_coverage) }}
-                    {{ wtf.form_field(form.healthcare_expenses) }}
-                    {{ wtf.form_field(form.id_) }}
-                    {{ wtf.form_field(form.income) }}
-                    {{ wtf.form_field(form.lastname) }}
-                    {{ wtf.form_field(form.marital) }}
-                    {{ wtf.form_field(form.passport) }}
-                    {{ wtf.form_field(form.race) }}
-                    {{ wtf.form_field(form.state) }}
-                    {{ wtf.form_field(form.zip) }}
+                    {{ wtf.form_field(form.medication)}}
+                    {{ wtf.form_field(form.observation)}}
+                    {{ wtf.form_field(form.organization)}}
+                    {{ wtf.form_field(form.patient)}}
+                    {{ wtf.form_field(form.payer)}}
+                    {{ wtf.form_field(form.payer_transition)}}
+                    {{ wtf.form_field(form.procedure)}}
+                    {{ wtf.form_field(form.provider)}}
+                    {{ wtf.form_field(form.supply)}}
                 </div>
             </div>
-            <div class="col-md-3">
-                <h5>OBSERVATION DATA</h5>
-                <div class="col-md-12" style="padding-right: 5px; padding-left: 5px;">
-                    {{ wtf.form_field(form.observation_date) }}
-                    {{ wtf.form_field(form.observed_patient) }}
-                    {{ wtf.form_field(form.observation_category) }}
-                    {{ wtf.form_field(form.observation_code) }}
-                    {{ wtf.form_field(form.observation_description) }}
-                    {{ wtf.form_field(form.observation_value) }}
-                    {{ wtf.form_field(form.observation_units) }}
-                    {{ wtf.form_field(form.observation_type) }}
-                </div>
+            <div class="col-md-8">
+                {{ wtf.form_field(form.sparql_query) }}
             </div>
-            <div class="col-md-5">
+        </div>
+        <hr class="solid">
+        <div class="row">
+            <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-12">
                         {{ wtf.form_field(form.apply_trust_score) }}
@@ -61,7 +52,6 @@
                         {{ wtf.form_field(form.trust_threshold)}}
                     </div>
                 </div>
-                <hr class="solid">
                 <div class="row">
                     <div class="col-md-12">
                         {{ wtf.form_field(form.apply_veracity_score)}}
@@ -79,37 +69,19 @@
                         {{ wtf.form_field(form.veracity_threshold)}}
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        {{ wtf.form_field(form.limit)}}
+                    </div>
+                    <div class="col-md-9 text-center" style="padding-top: 25px;">
+                        {{ wtf.form_field(form.submit) }}
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                {{ wtf.form_field(form.sparql_query) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                {{ wtf.form_field(form.limit)}}
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="col-md-6 text-right">
-                {{ wtf.form_field(form.submit) }}
-            </div>
-        </div>
-    </div>
 </form>
 <br>
 
-{% if user_trust_score %}
-<div class="panel panel-info">
-    <div class="panel-heading">
-        <h3 class="panel-title">Info</h3>
-    </div>
-    <div class="panel-body">
-        <pre>{{user_trust_score|safe}}</pre>
-    </div>
-</div>
-{% endif %}
 
 {% if result %}
 <div class="panel panel-success">
@@ -124,7 +96,8 @@
         <h3 class="panel-title">Info</h3>
     </div>
     <div class="panel-body">
-        1. Select check box for <code>SELECT</code> variables. <br>
+        <p>Query will be generated based on the selected data categories and conditions.</p>
+        <!-- 1. Select check box for <code>SELECT</code> variables. <br>
         2. Write condition in <code>SPARQL</code> triples. <br><br>
         Example: <br>
         Select <code>Birth Date</code> and write
@@ -135,7 +108,7 @@ WHERE {
 ?patient a syn:Patient .
 ?patient syn:birthdate ?birthdate .
 FILTER (?birthdate > "2000-05-23T10:20:13+05:30"^^xsd:dateTime)
-}</code></pre>
+}</code></pre> -->
     </div>
 </div>
 {% endif %}

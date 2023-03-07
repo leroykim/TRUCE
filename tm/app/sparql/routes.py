@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.sparql.forms import SPARQLForm, PatientDataForm
+from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
 from .fuseki import Fuseki
 from .query import QueryFactory
@@ -11,17 +11,17 @@ from .user import UserInfo
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/data", methods=["GET", "POST"])
 def query_patient():
-    form = PatientDataForm()
+    form = DataCategoryForm()
     if form.validate_on_submit():
         flash("SPARQL query has been sent.")
 
         st = time.time()
-        query_factory = QueryFactory(form=form, data_class="patient")
+        # query_factory = QueryFactory(form=form, data_class="patient")
         fuseki = Fuseki()
         # ask_query = query_factory.get_ask_query()
         # available_endpoint_list = fuseki.ask_all(ask_query)
         # query = query_factory.get_federated_query(available_endpoint_list)
-        query = query_factory.get_select_query()
+        # query = query_factory.get_select_query()
         result = fuseki.query(query)
         et = time.time()
         elapsed_time = et - st
