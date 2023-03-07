@@ -7,13 +7,13 @@ from .fuseki import Fuseki
 from .query import QueryFactory
 from .user import UserInfo
 
-@bp.route('/', methods=['GET', 'POST'])
-@bp.route('/index', methods=['GET', 'POST'])
-@bp.route('/data', methods=['GET', 'POST'])
+
+@bp.route("/", methods=["GET", "POST"])
+@bp.route("/data", methods=["GET", "POST"])
 def query_patient():
     form = PatientDataForm()
     if form.validate_on_submit():
-        flash('SPARQL query has been sent.')
+        flash("SPARQL query has been sent.")
 
         st = time.time()
         query_factory = QueryFactory(form=form, data_class="patient")
@@ -24,33 +24,39 @@ def query_patient():
         query = query_factory.get_select_query()
         result = fuseki.query(query)
         et = time.time()
-        elapsed_time = et-st
+        elapsed_time = et - st
 
         # For informations
         user_info = UserInfo()
         user_trust_score = f"{user_info.individual_id}'s identity score: {user_info.get_identity_score()} & behavior score: {user_info.get_behavior_score()}, query elapsed time: {elapsed_time} seconds"
-        query_for_html = query.replace("<", "&lt;").replace(">","&gt;")
+        query_for_html = query.replace("<", "&lt;").replace(">", "&gt;")
     else:
         result = None
         query = None
         query_for_html = None
         user_trust_score = None
-        
-    return render_template('sparql/patient.html', title='PATIENT DATA',
-                           form=form, result=result, query=query_for_html, user_trust_score = user_trust_score)
+
+    return render_template(
+        "sparql/patient.html",
+        title="PATIENT DATA",
+        form=form,
+        result=result,
+        query=query_for_html,
+        user_trust_score=user_trust_score,
+    )
 
 
-@bp.route('/sparql', methods=['GET', 'POST'])
+@bp.route("/sparql", methods=["GET", "POST"])
 def query_sparql():
     form = SPARQLForm()
     if form.validate_on_submit():
-        flash('SPARQL query has been sent.')
+        flash("SPARQL query has been sent.")
         fuseki = Fuseki()
         result = fuseki.query(form.sparql_query.data)
     else:
         result = None
-    return render_template('sparql/sparql.html', title='SPARQL',
-                           form=form, result=result)
+    return render_template("sparql/sparql.html", title="SPARQL", form=form, result=result)
+
 
 # @bp.route('/setting', methods=['GET', 'POST'])
 # @login_required
