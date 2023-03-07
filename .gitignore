@@ -3,6 +3,7 @@
 *.ttl
 test_data/*
 tm-network/*
+*.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
