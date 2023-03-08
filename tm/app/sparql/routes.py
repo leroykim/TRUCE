@@ -4,8 +4,9 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
 from .fuseki import Fuseki
-from .query import QueryFactory
-from .user import UserInfo
+from .query import SyntheaQueryFactory
+
+# from .user import UserInfo
 
 
 @bp.route("/", methods=["GET", "POST"])
@@ -16,20 +17,17 @@ def query_patient():
         flash("SPARQL query has been sent.")
 
         st = time.time()
-        # query_factory = QueryFactory(form=form, data_class="patient")
+        query_factory = SyntheaQueryFactory(form=form)
         fuseki = Fuseki()
-        # ask_query = query_factory.get_ask_query()
-        # available_endpoint_list = fuseki.ask_all(ask_query)
-        # query = query_factory.get_federated_query(available_endpoint_list)
-        # query = query_factory.get_select_query()
+        query = query_factory.get_select_query()
         result = fuseki.query(query)
         et = time.time()
         elapsed_time = et - st
 
         # For informations
-        user_info = UserInfo()
-        user_trust_score = f"{user_info.individual_id}'s identity score: {user_info.get_identity_score()} & behavior score: {user_info.get_behavior_score()}, query elapsed time: {elapsed_time} seconds"
-        query_for_html = query.replace("<", "&lt;").replace(">", "&gt;")
+        # user_info = UserInfo()
+        # user_trust_score = f"{user_info.individual_id}'s identity score: {user_info.get_identity_score()} & behavior score: {user_info.get_behavior_score()}, query elapsed time: {elapsed_time} seconds"
+        # query_for_html = query.replace("<", "&lt;").replace(">", "&gt;")
     else:
         result = None
         query = None

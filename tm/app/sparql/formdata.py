@@ -1,7 +1,7 @@
 from app.sparql.forms import DataCategoryForm
 
 
-def get_data_category(form: DataCategoryForm) -> dict:
+def get_data_category_selections(form: DataCategoryForm) -> dict:
     data_category = {}
     data_category["allergy"] = form.allergy.data
     data_category["care_plan"] = form.care_plan.data
