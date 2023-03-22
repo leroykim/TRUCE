@@ -21,7 +21,6 @@ class Config(object):
     POSTS_PER_PAGE = int(os.environ.get("POSTS_PER_PAGE"))
 
     FUSEKI_URL = os.environ.get("FUSEKI_URL")
-    REMOTE_URL_DICT = json.loads(os.environ.get("REMOTE_URL_DICT").replace("'", '"'))
     PREFIX_DICT = json.loads(os.environ.get("PREFIX_DICT").replace("'", '"'))
     ONTOLOGY_IRI = os.environ.get("ONTOLOGY_IRI")
     NAMESPACE_ABR = os.environ.get("NAMESPACE_ABR")

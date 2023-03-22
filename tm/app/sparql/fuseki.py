@@ -6,43 +6,42 @@ from tabulate import tabulate
 import json
 
 
-class Fuseki():
+class Fuseki:
     def __init__(self):
-        endpoint = current_app.config['FUSEKI_URL']
+        endpoint = current_app.config["FUSEKI_URL"]
         self.store = SPARQLUpdateStore()
         self.query_endpoint = f"{endpoint}/query"
         self.update_endpoint = f"{endpoint}/update"
         self.store.open((self.query_endpoint, self.update_endpoint))
 
-        self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
+        # self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
-    def query(self, sparql_query, format='html'):
+    def query(self, sparql_query, format="html"):
+        print(f"Query:\n{sparql_query}")
         result = self.store.query(sparql_query)
-        #current_app.logger.info(json.loads(result.serialize(format='json')))
-        if format == 'html':
+        # current_app.logger.info(json.loads(result.serialize(format='json')))
+        if format == "html":
             result = self.__get_html(result)
-        elif format == 'text':
+        elif format == "text":
             result = self.__get_text(result)
-        elif format == 'json':
-            result = json.loads(result.serialize(format='json'))
+        elif format == "json":
+            result = json.loads(result.serialize(format="json"))
 
-        current_app.logger.info(f"Result:\n{result}")
+        count = len(result["results"]["bindings"])
+        current_app.logger.info(f"Total {count} results retrieved.")
         return result
 
     def ask_local(self, ask_query):
         result = self.store.query(ask_query)
-        result_json = json.loads(result.serialize(format='json'))
-        return result_json['boolean']
+        result_json = json.loads(result.serialize(format="json"))
+        return result_json["boolean"]
 
     def ask_remote(self, remote_endpoint, ask_query):
         store = SPARQLUpdateStore()
-        store.open(
-            (f"{remote_endpoint}/query",
-            f"{remote_endpoint}/update")
-            )
+        store.open((f"{remote_endpoint}/query", f"{remote_endpoint}/update"))
         result = store.query(ask_query)
-        result_json = json.loads(result.serialize(format='json'))
-        return result_json['boolean']
+        result_json = json.loads(result.serialize(format="json"))
+        return result_json["boolean"]
 
     def ask_all(self, ask_query):
         result_list = []
@@ -55,16 +54,16 @@ class Fuseki():
 
     def __get_html(self, result):
         temp = NamedTemporaryFile()
-        result.serialize(destination=temp.name, format='csv')
+        result.serialize(destination=temp.name, format="csv")
         df = read_csv(temp.name)
         temp.close()
-        html = df.to_html(classes='table')
+        html = df.to_html(classes="table")
         return html
 
     def __get_text(self, result):
         temp = NamedTemporaryFile()
-        result.serialize(destination=temp.name, format='csv')
+        result.serialize(destination=temp.name, format="csv")
         df = read_csv(temp.name)
         temp.close()
-        table = tabulate(df, headers='keys', tablefmt='psql')
+        table = tabulate(df, headers="keys", tablefmt="psql")
         return table

@@ -1,9 +1,20 @@
 from flask_wtf import FlaskForm
 from .formdata import get_score_weights
 from .user import UserInfo
-from SPARQLBurger.SPARQLQueryBuilder import Prefix, Triple, SPARQLSelectQuery, SPARQLGraphPattern, Filter
+from SPARQLBurger.SPARQLQueryBuilder import (
+    Prefix,
+    Triple,
+    SPARQLSelectQuery,
+    SPARQLGraphPattern,
+    Filter,
+)
 
-class DUAPolicyManager ():
+"""
+Since the policy manager was for many-to-many relationship, it should be changed to one-to-many relationship.
+"""
+
+
+class DUAPolicyManager:
     def __init__(self):
         self.user_info = UserInfo()
 
@@ -12,25 +23,37 @@ class DUAPolicyManager ():
         dua_pattern = SPARQLGraphPattern()
         dua_pattern.add_triples(
             triples=[
-                Triple(subject=f"syn:{individual_id}", predicate="syn:belongsTo", object="?organization"),
-                Triple(subject="?dua", predicate="dua:hasDataCustodian", object="?dataCustodian"),
-                Triple(subject="?dua", predicate="dua:hasRecipient", object="?recipient"),
-                Triple(subject="?dua", predicate="dua:requestedData", object="?data")
+                Triple(
+                    subject=f"syn:{individual_id}",
+                    predicate="syn:belongsTo",
+                    object="?organization",
+                ),
+                Triple(
+                    subject="?dua",
+                    predicate="dua:hasDataCustodian",
+                    object="?dataCustodian",
+                ),
+                Triple(
+                    subject="?dua",
+                    predicate="dua:hasRecipient",
+                    object="?recipient",
+                ),
+                Triple(
+                    subject="?dua",
+                    predicate="dua:requestedData",
+                    object="?data",
+                ),
             ]
         )
         dua_pattern.add_filter(
-            filter = Filter(
-                expression = "STR(?dataCustodian) = STR(syn:organization_a170b742-0340-37b8-9fd4-e9918aba0537)"
+            filter=Filter(
+                expression="STR(?dataCustodian) = STR(syn:organization_a170b742-0340-37b8-9fd4-e9918aba0537)"
             )
         )
-        dua_pattern.add_filter(
-            filter = Filter(
-                expression= "STR(?data) IN ()"
-            )
-        )
+        dua_pattern.add_filter(filter=Filter(expression="STR(?data) IN ()"))
 
 
-class TrustPolicyManager():
+class TrustPolicyManager:
     def __init__(self, form: FlaskForm):
         self.score_weights = get_score_weights(form=form)
         self.user_info = UserInfo()
@@ -45,7 +68,11 @@ class TrustPolicyManager():
         policy_clause = "\n".join([trust_triples, bind_clause, filter_clause])
         return policy_clause
 
-    def get_veracity_policy(self, datatype: str = "observation", result_variable: str = "veracity_weighted_average") -> str:
+    def get_veracity_policy(
+        self,
+        datatype: str = "observation",
+        result_variable: str = "veracity_weighted_average",
+    ) -> str:
         veracity_triples = self.get_veracity_triples(datatype=datatype)
         credibility_weight = self.score_weights["credibility"]
         objectivity_weight = self.score_weights["objectivity"]
@@ -62,7 +89,7 @@ class TrustPolicyManager():
     def is_veracity_policy_requested(self, data_class: str = "observation"):
         return self.score_weights["apply_veracity_score"]
 
-    def get_veracity_triples(self, datatype:str):
+    def get_veracity_triples(self, datatype: str):
         where_clause = self.__get_veracity_where_pattern(datatype=datatype).get_text()
         return self.__strip_curly_brackets(where_clause)
 
@@ -71,18 +98,27 @@ class TrustPolicyManager():
         subject = f"?{datatype.lower()}"
         where_pattern.add_triples(
             triples=[
-                Triple(subject=subject, predicate="tst:credibility",
-                       object="?credibility"),
-                Triple(subject=subject, predicate="tst:objectivity",
-                       object="?objectivity"),
-                Triple(subject=subject, predicate="tst:trustfulness",
-                       object="?trustfulness"),
+                Triple(
+                    subject=subject,
+                    predicate="tst:credibility",
+                    object="?credibility",
+                ),
+                Triple(
+                    subject=subject,
+                    predicate="tst:objectivity",
+                    object="?objectivity",
+                ),
+                Triple(
+                    subject=subject,
+                    predicate="tst:trustfulness",
+                    object="?trustfulness",
+                ),
             ]
         )
         return where_pattern
 
     def __strip_curly_brackets(self, clause: str):
-        clause = clause.replace('   ', '')
-        clause = clause.replace('{', '')
-        clause = clause.replace('}', '')
+        clause = clause.replace("   ", "")
+        clause = clause.replace("{", "")
+        clause = clause.replace("}", "")
         return clause.strip()

@@ -10,7 +10,7 @@ def get_variables(data_category_selection: dict) -> list:
     variable_list = []
     for data_category, isSelected in data_category_selection.items():
         if isSelected:
-            variable_list.append(data_category.lower())
+            variable_list.append(f"?{data_category.lower()}")
             if data_category == "allergy":
                 variable_list.extend(get_allergy_variables())
             elif data_category == "care_plan":
