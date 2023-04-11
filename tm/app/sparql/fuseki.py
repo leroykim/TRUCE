@@ -7,6 +7,11 @@ import json
 
 
 class Fuseki:
+    """
+    This class should ONLY be used to query the Fuseki server.
+    Do not add features outside of this scope.
+    """
+
     def __init__(self):
         endpoint = current_app.config["FUSEKI_URL"]
         self.store = SPARQLUpdateStore()
@@ -17,7 +22,7 @@ class Fuseki:
         # self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
     def query(self, sparql_query, format="html"):
-        print(f"Query:\n{sparql_query}")
+        print(f"Query sent:\n{sparql_query}")
         result = self.store.query(sparql_query)
         # current_app.logger.info(json.loads(result.serialize(format='json')))
         if format == "html":
@@ -31,7 +36,12 @@ class Fuseki:
         current_app.logger.info(f"Total {count} results retrieved.")
         return result
 
-    def ask_local(self, ask_query):
+    def delete_insert(self, delete_insert_query):
+        result = self.store.update(delete_insert_query)
+        print(result)
+
+    def ask(self, ask_query):
+        print(f"Query sent:\n{ask_query}")
         result = self.store.query(ask_query)
         result_json = json.loads(result.serialize(format="json"))
         return result_json["boolean"]

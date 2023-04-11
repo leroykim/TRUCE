@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from .formdata import get_score_weights
 from .user import UserInfo
+from .query import SPARQLAskQuery
+from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import (
     Prefix,
     Triple,
@@ -15,42 +17,57 @@ Since the policy manager was for many-to-many relationship, it should be changed
 
 
 class DUAPolicyManager:
-    def __init__(self):
-        self.user_info = UserInfo()
+    """
+    This class is responsible for generating the DUA policy for the SPARQL query.
+    User id will be stored in the same graph database with other data.
+    """
 
-    def get_dua_policy(self):
-        individual_id = self.user_info.individual_id
+    def __init__(self):
+        # self.user_info = UserInfo()
+        self.prefix_list = current_app.config["PREFIX_LIST"]
+
+    def get_dua_policy(
+        self, user: str, dataCustodian: str, data: str
+    ) -> SPARQLGraphPattern:
         dua_pattern = SPARQLGraphPattern()
         dua_pattern.add_triples(
             triples=[
                 Triple(
-                    subject=f"syn:{individual_id}",
+                    subject=f"syn:{user}",
                     predicate="syn:belongsTo",
                     object="?organization",
                 ),
                 Triple(
+                    subject=f"syn:{dataCustodian}",
+                    predicate="a",
+                    object="syn:DataCustodian",
+                ),
+                Triple(
                     subject="?dua",
-                    predicate="dua:hasDataCustodian",
-                    object="?dataCustodian",
+                    predicate="syn:hasDataCustodian",
+                    object=f"syn:{dataCustodian}",
                 ),
                 Triple(
                     subject="?dua",
                     predicate="dua:hasRecipient",
-                    object="?recipient",
+                    object="?organization",
                 ),
                 Triple(
                     subject="?dua",
                     predicate="dua:requestedData",
-                    object="?data",
+                    object=f"?data",
                 ),
             ]
         )
-        dua_pattern.add_filter(
-            filter=Filter(
-                expression="STR(?dataCustodian) = STR(syn:organization_a170b742-0340-37b8-9fd4-e9918aba0537)"
-            )
-        )
-        dua_pattern.add_filter(filter=Filter(expression="STR(?data) IN ()"))
+        ask_query = SPARQLAskQuery()
+        for prefix in self.prefix_list:
+            ask_query.add_prefix(prefix=prefix)
+        ask_query.set_pattern(graph_pattern=dua_pattern)
+
+        # dua_pattern.add_filter(
+        #     filter=Filter(expression=f"?data = syn:{data}^^rdfs:PlainLiteral")
+        # )
+        return ask_query.get_text()
 
 
 class TrustPolicyManager:

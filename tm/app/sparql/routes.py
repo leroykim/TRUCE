@@ -1,9 +1,11 @@
 import time
-from flask import render_template, flash, request
+from flask import render_template, flash, request, current_app
+import json
 from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
 from .fuseki import Fuseki
 from .query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
+from .policymanager import DUAPolicyManager
 
 # from .user import UserInfo
 
@@ -45,19 +47,83 @@ def query_patient():
 
 @bp.route("/api", methods=["GET", "POST"])
 def query_patient_api():
+    """
+    TODO:
+        - Add 403 error handling when the user is not allowed to access the data.
+    """
     # Get parameters
     category = request.args.get("category")
     condition = request.args.get("condition")
+    user_id = request.args.get("user_id")
+    data_custodian = request.args.get("data_custodian")
+
+    fuseki = Fuseki()
+    duaPolicyManager = DUAPolicyManager()
+
+    # Policy
+    st = time.time()
+    dua_policy = duaPolicyManager.get_dua_policy(user_id, data_custodian, category)
+    isDuaCompliant = fuseki.ask(dua_policy)
+    et = time.time()
+    policy_time = et - st
+    if not isDuaCompliant:
+        current_app.logger.info(f"Access to {category} data is not allowed.")
+        return
+    else:
+        current_app.logger.info(f"Access to {category} data is allowed.")
+
+    # Query
     st = time.time()
     query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
     query = query_factory.get_select_query()
-    fuseki = Fuseki()
+    isExist = fuseki.ask(query_factory.get_ask_existence_query())
     result = fuseki.query(query, format="json")
     et = time.time()
     elapsed_time = et - st
     total_count = len(result["results"]["bindings"])
+    # if not isExist and total_count > 0:
+    #     current_app.logger.info(f"Access to {category} data is not allowed.")
+    # else:
+    #     current_app.logger.info(f"Access to {category} data is allowed.")
     # {"count": total_count, "result": result, "query": query, "elapsed_time": elapsed_time}
-    return {"count": total_count, "query": query, "elapsed_time": elapsed_time}
+    return json.dumps(
+        {
+            "count": total_count,
+            "query": query,
+            "elapsed_time": elapsed_time,
+            "result": result["results"]["bindings"],
+        }
+    )
+
+
+@bp.route("/experiment", methods=["GET", "POST"])
+def run_experiment():
+    category = request.args.get("category")
+    condition = request.args.get("condition")
+    endurance = request.args.get("endurance")
+    incidents = []
+    st = time.time()
+    query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
+    query = query_factory.get_select_query()
+    fuseki = Fuseki()
+    for i in range(int(endurance)):
+        isExist = fuseki.ask(query_factory.get_ask_existence_query())
+        result = fuseki.query(query, format="json")
+        total_count = len(result["results"]["bindings"])
+        if isExist and total_count == 0:
+            incidents.append(-1)
+        else:
+            incidents.append(1)
+    et = time.time()
+    elapsed_time = et - st
+    # {"count": total_count, "result": result, "query": query, "elapsed_time": elapsed_time}
+    return {
+        "isExist": isExist,
+        "count": total_count,
+        "incidents": incidents,
+        "query": query,
+        "elapsed_time": elapsed_time,
+    }
 
 
 @bp.route("/sparql", methods=["GET", "POST"])
@@ -69,7 +135,9 @@ def query_sparql():
         result = fuseki.query(form.sparql_query.data)
     else:
         result = None
-    return render_template("sparql/sparql.html", title="SPARQL", form=form, result=result)
+    return render_template(
+        "sparql/sparql.html", title="SPARQL", form=form, result=result
+    )
 
 
 # @bp.route('/setting', methods=['GET', 'POST'])
