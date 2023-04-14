@@ -2,8 +2,9 @@ from flask_wtf import FlaskForm
 from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import (
     SPARQLSelectQuery,
-    Prefix,
     SPARQLGraphPattern,
+    Prefix,
+    Filter,
 )
 from . import formdata
 from . import triple
@@ -102,6 +103,9 @@ class SPARQLAskQuery:
 
     def set_pattern(self, graph_pattern: SPARQLGraphPattern):
         self.graph_pattern = graph_pattern
+
+    def add_filter(self, filter: Filter):
+        self.graph_pattern.add_filter(filter=filter)
 
     def get_text(self):
         ask_query = ""

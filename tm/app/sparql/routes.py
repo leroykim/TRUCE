@@ -6,6 +6,7 @@ from app.sparql import bp
 from .fuseki import Fuseki
 from .query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
 from .policymanager import DUAPolicyManager
+from .duapolicy import DUAPolicy
 
 # from .user import UserInfo
 
@@ -52,7 +53,7 @@ def query_patient_api():
         - Add 403 error handling when the user is not allowed to access the data.
     """
     # Get parameters
-    category = request.args.get("category")
+    category = request.args.get("category").capitalize()
     condition = request.args.get("condition")
     user_id = request.args.get("user_id")
     data_custodian = request.args.get("data_custodian")
@@ -62,13 +63,22 @@ def query_patient_api():
 
     # Policy
     st = time.time()
-    dua_policy = duaPolicyManager.get_dua_policy(user_id, data_custodian, category)
-    isDuaCompliant = fuseki.ask(dua_policy)
+    dua_policy = DUAPolicy()
+    isDuaCompliant = fuseki.ask(dua_policy.dua_existence(user_id))
+    isRequestedDataMatched = fuseki.ask(
+        dua_policy.match_requested_data(user_id, category)
+    )
     et = time.time()
     policy_time = et - st
-    if not isDuaCompliant:
-        current_app.logger.info(f"Access to {category} data is not allowed.")
-        return
+    if not isDuaCompliant or not isRequestedDataMatched:
+        current_app.logger.info(
+            f"{user_id}'s access to {category} data is not allowed."
+        )
+        current_app.logger.info(f"Policy processing time: {policy_time}")
+        return (
+            "Unavailable for legal reasons.",
+            451,
+        )
     else:
         current_app.logger.info(f"Access to {category} data is allowed.")
 
