@@ -1,10 +1,10 @@
 import time
 from flask_wtf import FlaskForm
-from .formdata import get_score_weights
-from .user import UserInfo
-from .query import SPARQLAskQuery
-from .duapolicy import DUAPolicy
-from .fuseki import Fuseki
+from app.sparql.formdata import get_score_weights
+from app.sparql.user import UserInfo
+from app.sparql.query import SPARQLAskQuery
+from app.dua.duapolicy import DUAPolicy
+from app.sparql.fuseki import Fuseki
 from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import (
     Prefix,
@@ -52,9 +52,12 @@ class DUAPolicyChecker:
         # )
         policy_time = time.time() - st
         current_app.logger.info(f"Policy processing time: {policy_time}")
+        isCompliant = None
         for key, value in result_dict.items():
             current_app.logger.info(f"{key}: {value}")
-        return result_dict
+            if not value:
+                isCompliant = False
+        return isCompliant, result_dict
 
 
 class TrustPolicyManager:

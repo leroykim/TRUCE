@@ -1,5 +1,5 @@
 import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
+from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask
 from flask_bootstrap import Bootstrap
@@ -24,6 +24,18 @@ def create_app(config_class=Config):
     from app.sparql import bp as sparql_bp
 
     app.register_blueprint(sparql_bp)
+
+    from app.trust import bp as trust_bp
+
+    app.register_blueprint(trust_bp)
+
+    from app.dua import bp as dua_bp
+
+    app.register_blueprint(dua_bp)
+
+    from app.policy import bp as policy_bp
+
+    app.register_blueprint(policy_bp)
 
     if not os.path.exists("logs"):
         os.mkdir("logs")

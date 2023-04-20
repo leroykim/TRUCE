@@ -1,9 +1,9 @@
 import copy
 from flask import current_app
-from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple, Prefix, Filter
-from .accesspolicy import AccessPolicy
-from .query import SPARQLAskQuery
-from .namespace import SYN
+from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple
+from app.policy.accesspolicy import AccessPolicy
+from app.sparql.query import SPARQLAskQuery
+from app.sparql.namespace import SYN
 
 
 class DUAPolicy(AccessPolicy):

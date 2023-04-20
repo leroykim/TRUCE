@@ -4,9 +4,9 @@ import json
 from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
 from app.trust.trustmanager import TrustManager
-from .fuseki import Fuseki
-from .query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
-from .policychecker import DUAPolicyChecker
+from app.sparql.fuseki import Fuseki
+from app.sparql.query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
+from app.policy.policychecker import DUAPolicyChecker
 
 
 @bp.route("/api", methods=["GET", "POST"])
@@ -27,14 +27,13 @@ def query_patient_api():
     trustManager = TrustManager()
 
     # Policy
-    dua_result = duaPolicyChecker.check(user_id, category)
-    for _, value in dua_result.items():
-        if not value:
-            trustManager.update(user_id, dua_result)
-            return (
-                "Unavailable for legal reasons.",
-                451,
-            )
+    isCompliant, dua_result = duaPolicyChecker.check(user_id, category)
+    trustManager.update(user_id, dua_result)
+    if not isCompliant:
+        return (
+            "Unavailable for legal reasons.",
+            451,
+        )
 
     # Query
     st = time.time()

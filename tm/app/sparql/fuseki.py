@@ -37,8 +37,7 @@ class Fuseki:
         return result
 
     def update(self, sparql_query):
-        result = self.store.update(sparql_query)
-        print(result)
+        self.store.update(sparql_query)
 
     def ask(self, ask_query):
         # print(f"Query sent:\n{ask_query}")

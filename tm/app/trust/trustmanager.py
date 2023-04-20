@@ -5,8 +5,6 @@ from SPARQLBurger.SPARQLQueryBuilder import (
     SPARQLUpdateQuery,
     SPARQLGraphPattern,
     Triple,
-    Prefix,
-    Filter,
 )
 
 
@@ -17,10 +15,21 @@ class TrustManager:
 
     def update(self, user_id: str, policy_result: dict[str, bool]):
         currunt_behavior_trust = self.__get_behavior_trust_score(user_id=user_id)
-        for _, value in policy_result.items():
+        new_behavior_trust = currunt_behavior_trust
+        for key, value in policy_result.items():
             if value is False:
-                new_behavior_trust = currunt_behavior_trust - 0.1
+                current_app.logger.info(f"Policy {key} is not satisfied.")
+                new_behavior_trust = new_behavior_trust - 0.01
 
+        update_query = self.__get_update_trust_query(
+            user_id, currunt_behavior_trust, new_behavior_trust
+        )
+
+        current_app.logger.info(update_query.get_text())
+
+        self.fuseki.update(sparql_query=update_query.get_text())
+
+    def __get_update_trust_query(self, user_id: str, current: float, new: float):
         update_query = SPARQLUpdateQuery()
         for prefix in self.prefix_list:
             update_query.add_prefix(prefix=prefix)
@@ -30,7 +39,7 @@ class TrustManager:
                 Triple(
                     subject=f"?user",
                     predicate="tst:behaviorTrust",
-                    object=f'"{currunt_behavior_trust}"^^xsd:float',
+                    object=f'"{current}"^^xsd:float',
                 )
             ]
         )
@@ -41,7 +50,7 @@ class TrustManager:
                 Triple(
                     subject=f"?user",
                     predicate="tst:behaviorTrust",
-                    object=f'"{new_behavior_trust}"^^xsd:float',
+                    object=f'"{new}"^^xsd:float',
                 )
             ]
         )
@@ -66,9 +75,7 @@ class TrustManager:
         update_query.set_insert_pattern(insert_pattern)
         update_query.set_where_pattern(where_pattern)
 
-        current_app.logger.info(update_query.get_text())
-
-        self.fuseki.update(sparql_query=update_query.get_text())
+        return update_query
 
     def __get_behavior_trust_score(self, user_id: str) -> float:
         select_query = SPARQLSelectQuery(distinct=True)
