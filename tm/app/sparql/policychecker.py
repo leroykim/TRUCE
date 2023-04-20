@@ -1,7 +1,10 @@
+import time
 from flask_wtf import FlaskForm
 from .formdata import get_score_weights
 from .user import UserInfo
 from .query import SPARQLAskQuery
+from .duapolicy import DUAPolicy
+from .fuseki import Fuseki
 from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import (
     Prefix,
@@ -16,61 +19,49 @@ Since the policy manager was for many-to-many relationship, it should be changed
 """
 
 
-class DUAPolicyManager:
+class DUAPolicyChecker:
     """
-    This class is responsible for generating the DUA policy for the SPARQL query.
-    User id will be stored in the same graph database with other data.
+    This class is for checking DUA policies.
+    It sends a query to the triple store to check if the user is compliant with the DUA policy.
     """
 
     def __init__(self):
         # self.user_info = UserInfo()
         self.prefix_list = current_app.config["PREFIX_LIST"]
+        self.duapolicy = DUAPolicy()
+        self.fuseki = Fuseki()
 
-    def get_dua_policy(
-        self, user: str, dataCustodian: str, data: str
-    ) -> SPARQLGraphPattern:
-        dua_pattern = SPARQLGraphPattern()
-        dua_pattern.add_triples(
-            triples=[
-                Triple(
-                    subject=f"syn:{user}",
-                    predicate="syn:belongsTo",
-                    object="?organization",
-                ),
-                Triple(
-                    subject=f"syn:{dataCustodian}",
-                    predicate="a",
-                    object="syn:DataCustodian",
-                ),
-                Triple(
-                    subject="?dua",
-                    predicate="syn:hasDataCustodian",
-                    object=f"syn:{dataCustodian}",
-                ),
-                Triple(
-                    subject="?dua",
-                    predicate="dua:hasRecipient",
-                    object="?organization",
-                ),
-                Triple(
-                    subject="?dua",
-                    predicate="dua:requestedData",
-                    object=f"?data",
-                ),
-            ]
+    def check(self, user_id: str, requested_data: str):
+        st = time.time()
+        result_dict = dict()
+        dua_existence = self.duapolicy.dua_existence(user_id=user_id)
+        match_requested_data = self.duapolicy.match_requested_data(
+            user_id=user_id, requested_data=requested_data
         )
-        ask_query = SPARQLAskQuery()
-        for prefix in self.prefix_list:
-            ask_query.add_prefix(prefix=prefix)
-        ask_query.set_pattern(graph_pattern=dua_pattern)
-
-        # dua_pattern.add_filter(
-        #     filter=Filter(expression=f"?data = syn:{data}^^rdfs:PlainLiteral")
+        # match_permitted_usage_and_disclosure = (
+        #     self.duapolicy.match_permitted_usage_and_disclosure(
+        #         user_id=user_id, usage=usage
+        #     )
         # )
-        return ask_query.get_text()
+        result_dict["dua_existence"] = self.fuseki.ask(ask_query=dua_existence)
+        result_dict["match_requested_data"] = self.fuseki.ask(
+            ask_query=match_requested_data
+        )
+        # result_dict["match_permitted_usage_and_disclosure"] = self.fuseki.ask(
+        #     ask_query=match_permitted_usage_and_disclosure
+        # )
+        policy_time = time.time() - st
+        current_app.logger.info(f"Policy processing time: {policy_time}")
+        for key, value in result_dict.items():
+            current_app.logger.info(f"{key}: {value}")
+        return result_dict
 
 
 class TrustPolicyManager:
+    """
+    Not used for now, but has useful methods.
+    """
+
     def __init__(self, form: FlaskForm):
         self.score_weights = get_score_weights(form=form)
         self.user_info = UserInfo()

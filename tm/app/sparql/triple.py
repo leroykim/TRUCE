@@ -1,5 +1,9 @@
 from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple
 
+'''
+The methods in this file are used to generate variables and data properties of SPARQL queries
+for each data category.
+'''
 
 def get_variables(data_category_selection: dict) -> list:
     """

@@ -16,13 +16,13 @@ class Fuseki:
         endpoint = current_app.config["FUSEKI_URL"]
         self.store = SPARQLUpdateStore()
         self.query_endpoint = f"{endpoint}/query"
-        self.update_endpoint = f"{endpoint}/update"
+        self.update_endpoint = f"{endpoint}"
         self.store.open((self.query_endpoint, self.update_endpoint))
 
         # self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
     def query(self, sparql_query, format="html"):
-        print(f"Query sent:\n{sparql_query}")
+        # print(f"Query sent:\n{sparql_query}")
         result = self.store.query(sparql_query)
         # current_app.logger.info(json.loads(result.serialize(format='json')))
         if format == "html":
@@ -36,12 +36,12 @@ class Fuseki:
         current_app.logger.info(f"Total {count} results retrieved.")
         return result
 
-    def delete_insert(self, delete_insert_query):
-        result = self.store.update(delete_insert_query)
+    def update(self, sparql_query):
+        result = self.store.update(sparql_query)
         print(result)
 
     def ask(self, ask_query):
-        print(f"Query sent:\n{ask_query}")
+        # print(f"Query sent:\n{ask_query}")
         result = self.store.query(ask_query)
         result_json = json.loads(result.serialize(format="json"))
         return result_json["boolean"]

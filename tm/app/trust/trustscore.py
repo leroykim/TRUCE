@@ -23,6 +23,13 @@ class RayChakraborty:
     def __init__(self):
         pass
 
+    def compensate(self, current_trustscore: float, incident_value: int):
+        """
+        Compensate the current trust score by the incident value.
+        Currently, it has the simplest implementation.
+        """
+        return current_trustscore - incident_value
+
     def get_weight(self, time_interval: int):
         """
         None negative weight to the ith time interval.

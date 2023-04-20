@@ -3,12 +3,58 @@ from flask import render_template, flash, request, current_app
 import json
 from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
+from app.trust.trustmanager import TrustManager
 from .fuseki import Fuseki
 from .query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
-from .policymanager import DUAPolicyManager
-from .duapolicy import DUAPolicy
+from .policychecker import DUAPolicyChecker
 
-# from .user import UserInfo
+
+@bp.route("/api", methods=["GET", "POST"])
+def query_patient_api():
+    # Get parameters
+    category = request.args.get("category").capitalize()
+    condition = request.args.get("condition")
+    user_id = request.args.get("user_id")
+    data_custodian = request.args.get("data_custodian")
+
+    if not user_id:
+        return "User ID is required.", 400
+
+    if not category:
+        return "Category is required.", 400
+
+    duaPolicyChecker = DUAPolicyChecker()
+    trustManager = TrustManager()
+
+    # Policy
+    dua_result = duaPolicyChecker.check(user_id, category)
+    for _, value in dua_result.items():
+        if not value:
+            trustManager.update(user_id, dua_result)
+            return (
+                "Unavailable for legal reasons.",
+                451,
+            )
+
+    # Query
+    st = time.time()
+    fuseki = Fuseki()
+    query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
+    query = query_factory.get_select_query()
+    isExist = fuseki.ask(query_factory.get_ask_existence_query())
+    result = fuseki.query(query, format="json")
+    et = time.time()
+    elapsed_time = et - st
+    total_count = len(result["results"]["bindings"])
+
+    return json.dumps(
+        {
+            "count": total_count,
+            "query": query,
+            "elapsed_time": elapsed_time,
+            "result": result["results"]["bindings"],
+        }
+    )
 
 
 @bp.route("/", methods=["GET", "POST"])
@@ -43,66 +89,6 @@ def query_patient():
         result=result,
         query=query_for_html,
         user_trust_score=user_trust_score,
-    )
-
-
-@bp.route("/api", methods=["GET", "POST"])
-def query_patient_api():
-    """
-    TODO:
-        - Add 403 error handling when the user is not allowed to access the data.
-    """
-    # Get parameters
-    category = request.args.get("category").capitalize()
-    condition = request.args.get("condition")
-    user_id = request.args.get("user_id")
-    data_custodian = request.args.get("data_custodian")
-
-    fuseki = Fuseki()
-    duaPolicyManager = DUAPolicyManager()
-
-    # Policy
-    st = time.time()
-    dua_policy = DUAPolicy()
-    isDuaCompliant = fuseki.ask(dua_policy.dua_existence(user_id))
-    isRequestedDataMatched = fuseki.ask(
-        dua_policy.match_requested_data(user_id, category)
-    )
-    et = time.time()
-    policy_time = et - st
-    if not isDuaCompliant or not isRequestedDataMatched:
-        current_app.logger.info(
-            f"{user_id}'s access to {category} data is not allowed."
-        )
-        current_app.logger.info(f"Policy processing time: {policy_time}")
-        return (
-            "Unavailable for legal reasons.",
-            451,
-        )
-    else:
-        current_app.logger.info(f"Access to {category} data is allowed.")
-
-    # Query
-    st = time.time()
-    query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
-    query = query_factory.get_select_query()
-    isExist = fuseki.ask(query_factory.get_ask_existence_query())
-    result = fuseki.query(query, format="json")
-    et = time.time()
-    elapsed_time = et - st
-    total_count = len(result["results"]["bindings"])
-    # if not isExist and total_count > 0:
-    #     current_app.logger.info(f"Access to {category} data is not allowed.")
-    # else:
-    #     current_app.logger.info(f"Access to {category} data is allowed.")
-    # {"count": total_count, "result": result, "query": query, "elapsed_time": elapsed_time}
-    return json.dumps(
-        {
-            "count": total_count,
-            "query": query,
-            "elapsed_time": elapsed_time,
-            "result": result["results"]["bindings"],
-        }
     )
 
 

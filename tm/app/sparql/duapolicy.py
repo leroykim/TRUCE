@@ -10,10 +10,7 @@ class DUAPolicy(AccessPolicy):
     def __init__(self):
         self.count = 2
         self.policies = ["dua_existence", "match_requested_data"]
-        self.prefix_list = [
-            Prefix(prefix=k, namespace=v)
-            for k, v in current_app.config["PREFIX_DICT"].items()
-        ]
+        self.prefix_list = current_app.config["PREFIX_LIST"]
 
     def count(self) -> int:
         return self.count
@@ -21,17 +18,15 @@ class DUAPolicy(AccessPolicy):
     def policies(self) -> list[str]:
         return self.policies
 
-    def dua_existence(self, user_label: str):
+    def dua_existence(self, user_id: str):
         existence_pattern = SPARQLGraphPattern()
-        existence_pattern.add_triples(
-            triples=self.default_triples(user_label=user_label)
-        )
+        existence_pattern.add_triples(triples=self.default_triples(user_id=user_id))
         ask_query = self.default_query()
         ask_query.set_pattern(existence_pattern)
         return ask_query.get_text()
 
-    def match_requested_data(self, user_label: str, requested_data: str):
-        triples = copy.deepcopy(self.default_triples(user_label=user_label))
+    def match_requested_data(self, user_id: str, requested_data: str):
+        triples = copy.deepcopy(self.default_triples(user_id=user_id))
         triples.extend(
             [
                 Triple(
@@ -48,7 +43,25 @@ class DUAPolicy(AccessPolicy):
 
         return ask_query.get_text()
 
-    def default_triples(self, user_label: str) -> list[Triple]:
+    def match_permitted_usage_and_disclosure(self, user_id: str, usage: str):
+        triples = copy.deepcopy(self.default_triples(user_id=user_id))
+        triples.extend(
+            [
+                Triple(
+                    subject="?dua",
+                    predicate="dua:permittedUsage",
+                    object=f'"{SYN[usage]}"^^rdf:PlainLiteral',
+                ),
+            ]
+        )
+        permitted_usage_pattern = SPARQLGraphPattern()
+        permitted_usage_pattern.add_triples(triples=triples)
+        ask_query = self.default_query()
+        ask_query.set_pattern(permitted_usage_pattern)
+
+        return ask_query.get_text()
+
+    def default_triples(self, user_id: str) -> list[Triple]:
         return [
             Triple(
                 subject="?dataCustodian",
@@ -68,7 +81,7 @@ class DUAPolicy(AccessPolicy):
             Triple(
                 subject="?user",
                 predicate="rdfs:label",
-                object=f'"{user_label}"^^rdf:PlainLiteral',
+                object=f'"{user_id}"^^rdf:PlainLiteral',
             ),
             Triple(
                 subject="?user",
