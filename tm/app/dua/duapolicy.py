@@ -8,8 +8,14 @@ from app.sparql.namespace import SYN
 
 class DUAPolicy(AccessPolicy):
     def __init__(self):
-        self.count = 2
-        self.policies = ["dua_existence", "match_requested_data"]
+        self.count = 5
+        self.policies = [
+            "check_dua_existence",
+            "check_requested_data",
+            "check_permitted_usage_and_disclosure",
+            "check_requested_data_existence",
+            "check_requested_data_integrity",
+        ]
         self.prefix_list = current_app.config["PREFIX_LIST"]
 
     def count(self) -> int:
@@ -18,14 +24,14 @@ class DUAPolicy(AccessPolicy):
     def policies(self) -> list[str]:
         return self.policies
 
-    def dua_existence(self, user_id: str):
+    def check_dua_existence(self, user_id: str):
         existence_pattern = SPARQLGraphPattern()
         existence_pattern.add_triples(triples=self.default_triples(user_id=user_id))
         ask_query = self.default_query()
         ask_query.set_pattern(existence_pattern)
         return ask_query.get_text()
 
-    def match_requested_data(self, user_id: str, requested_data: str):
+    def check_requested_data(self, user_id: str, requested_data: str):
         triples = copy.deepcopy(self.default_triples(user_id=user_id))
         triples.extend(
             [
@@ -43,7 +49,10 @@ class DUAPolicy(AccessPolicy):
 
         return ask_query.get_text()
 
-    def match_permitted_usage_and_disclosure(self, user_id: str, usage: str):
+    def check_permitted_usage_and_disclosure(self, user_id: str, usage: str):
+        """
+        Check if it works
+        """
         triples = copy.deepcopy(self.default_triples(user_id=user_id))
         triples.extend(
             [
@@ -60,6 +69,31 @@ class DUAPolicy(AccessPolicy):
         ask_query.set_pattern(permitted_usage_pattern)
 
         return ask_query.get_text()
+
+    def check_requested_data_existence(self, requested_data: str):
+        """
+        This policy checks if the requested data exists in the data custodian's graph database.
+        The policy runs after dua_existence and match_requested_data, so data custodian must have
+        the requested data.
+        """
+        data_existence_pattern = SPARQLGraphPattern()
+        data_existence_pattern.add_triples(
+            triples=[
+                Triple(
+                    subject="?data",
+                    predicate="a",
+                    object=f'"{SYN[requested_data]}"',
+                ),
+            ]
+        )
+        ask_query = self.default_query()
+        ask_query.set_pattern(data_existence_pattern)
+
+        return ask_query.get_text()
+
+    def check_requested_data_integrity(self, user_id: str):
+        triples = copy.deepcopy(self.default_triples(user_id=user_id))
+        ...
 
     def default_triples(self, user_id: str) -> list[Triple]:
         return [

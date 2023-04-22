@@ -31,11 +31,11 @@ class DUAPolicyChecker:
         self.duapolicy = DUAPolicy()
         self.fuseki = Fuseki()
 
-    def check(self, user_id: str, requested_data: str):
+    def checkDataRecipient(self, user_id: str, requested_data: str):
         st = time.time()
         result_dict = dict()
-        dua_existence = self.duapolicy.dua_existence(user_id=user_id)
-        match_requested_data = self.duapolicy.match_requested_data(
+        dua_existence = self.duapolicy.check_dua_existence(user_id=user_id)
+        match_requested_data = self.duapolicy.check_requested_data(
             user_id=user_id, requested_data=requested_data
         )
         # match_permitted_usage_and_disclosure = (
@@ -58,6 +58,13 @@ class DUAPolicyChecker:
             if not value:
                 isCompliant = False
         return isCompliant, result_dict
+
+    def checkDataCustodian(self, requested_data: str):
+        st = time.time()
+        result_dict = dict()
+        data_existence = self.duapolicy.check_requested_data_existence(
+            requested_data=requested_data
+        )
 
 
 class TrustPolicyManager:

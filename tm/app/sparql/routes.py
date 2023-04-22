@@ -26,13 +26,22 @@ def query_patient_api():
     duaPolicyChecker = DUAPolicyChecker()
     trustManager = TrustManager()
 
-    # Policy
-    isCompliant, dua_result = duaPolicyChecker.check(user_id, category)
+    # Policy against data recipient
+    isCompliant, dua_result = duaPolicyChecker.checkDataRecipient(user_id, category)
     trustManager.update(user_id, dua_result)
     if not isCompliant:
         return (
             "Unavailable for legal reasons.",
             451,
+        )
+
+    # Policy against data custodian
+    isCompliant, dua_result = duaPolicyChecker.checkDataCustodian(category)
+    trustManager.update("user_data_custodian", dua_result)
+    if not isCompliant:
+        return (
+            "Service Unavailable.",
+            503,
         )
 
     # Query
