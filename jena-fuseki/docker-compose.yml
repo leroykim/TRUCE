@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  # busybox
+  fuseki-data:
+    image: busybox
+    container_name: fuseki_data
+    volumes:
+      # -v option
+      - /fuseki
+
+  # Fuseki
+  fuseki:
+    image: leroykim/jena-fuseki-4.7.0
+    container_name: fuseki # prevent auto-naming
+    platform: linux/amd64
+    depends_on:
+      - fuseki-data
+    ports:
+      # -p option
+      - "3030:3030"
+    environment:
+      # -e option
+      - ADMIN_PASSWORD=umbc_ebiquity
+      - FUSEKI_DATASET_1=covid19
+    cap_add:
+      - NET_ADMIN
