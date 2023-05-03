@@ -51,7 +51,14 @@ class DUAPolicyChecker:
         #     ask_query=match_permitted_usage_and_disclosure
         # )
         policy_time = time.time() - st
-        current_app.logger.info(f"Policy processing time: {policy_time}")
+        if not current_app.config["RECIPIENT_POLICY_CHECK_TIME"]:
+            current_app.config["RECIPIENT_POLICY_CHECK_TIME"] = (policy_time, 1)
+        else:
+            current_app.config["RECIPIENT_POLICY_CHECK_TIME"] = (
+                current_app.config["RECIPIENT_POLICY_CHECK_TIME"][0] + policy_time,
+                current_app.config["RECIPIENT_POLICY_CHECK_TIME"][1] + 1,
+            )
+        current_app.logger.info(f"RECIPIENT_POLICY_CHECK_TIME: {policy_time}")
         isCompliant = None
         for key, value in result_dict.items():
             current_app.logger.info(f"{key}: {value}")

@@ -1,3 +1,4 @@
+import time
 from app.sparql.fuseki import Fuseki
 from flask import current_app
 from SPARQLBurger.SPARQLQueryBuilder import (
@@ -14,6 +15,7 @@ class TrustManager:
         self.prefix_list = current_app.config["PREFIX_LIST"]
 
     def update(self, user_id: str, policy_result: dict[str, bool]):
+        st = time.time()
         currunt_behavior_trust = self.__get_behavior_trust_score(user_id=user_id)
         new_behavior_trust = currunt_behavior_trust
         for key, value in policy_result.items():
@@ -28,6 +30,16 @@ class TrustManager:
         current_app.logger.info(update_query.get_text())
 
         self.fuseki.update(sparql_query=update_query.get_text())
+
+        update_time = time.time() - st
+        if not current_app.config["TRUST_UPDATE_TIME"]:
+            current_app.config["TRUST_UPDATE_TIME"] = (update_time, 1)
+        else:
+            current_app.config["TRUST_UPDATE_TIME"] = (
+                current_app.config["TRUST_UPDATE_TIME"][0] + update_time,
+                current_app.config["TRUST_UPDATE_TIME"][1] + 1,
+            )
+        current_app.logger.info(f"TRUST_UPDATE_TIME: {update_time}")
 
     def __get_update_trust_query(self, user_id: str, current: float, new: float):
         update_query = SPARQLUpdateQuery()
@@ -78,6 +90,7 @@ class TrustManager:
         return update_query
 
     def __get_behavior_trust_score(self, user_id: str) -> float:
+        current_app.logger.info(f"Getting {user_id}'s behaviorTrust...")
         select_query = SPARQLSelectQuery(distinct=True)
         triples = [
             Triple(

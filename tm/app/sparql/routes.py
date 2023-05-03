@@ -1,5 +1,5 @@
 import time
-from flask import render_template, flash, request, current_app
+from flask import render_template, flash, request, current_app, g
 import json
 from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
@@ -10,12 +10,12 @@ from app.policy.policychecker import DUAPolicyChecker
 
 
 @bp.route("/api", methods=["GET", "POST"])
-def query_patient_api():
+def query_api():
     # Get parameters
     category = request.args.get("category").capitalize()
     condition = request.args.get("condition")
     user_id = request.args.get("user_id")
-    data_custodian = request.args.get("data_custodian")
+    # data_custodian = request.args.get("data_custodian")
 
     if not user_id:
         return "User ID is required.", 400
@@ -23,6 +23,7 @@ def query_patient_api():
     if not category:
         return "Category is required.", 400
 
+    # Policy check
     duaPolicyChecker = DUAPolicyChecker()
     trustManager = TrustManager()
 
@@ -45,22 +46,31 @@ def query_patient_api():
         )
 
     # Query
-    st = time.time()
     fuseki = Fuseki()
     query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
     query = query_factory.get_select_query()
-    isExist = fuseki.ask(query_factory.get_ask_existence_query())
     result = fuseki.query(query, format="json")
-    et = time.time()
-    elapsed_time = et - st
     total_count = len(result["results"]["bindings"])
 
     return json.dumps(
         {
             "count": total_count,
             "query": query,
-            "elapsed_time": elapsed_time,
             "result": result["results"]["bindings"],
+        }
+    )
+
+
+@bp.route("/api/elapsed_time", methods=["GET"])
+def get_elapsed_time():
+    return json.dumps(
+        {
+            "recipient_policy_check_time": current_app.config[
+                "RECIPIENT_POLICY_CHECK_TIME"
+            ],
+            "custodian_policy_check_time": "not implemented yet",
+            "trust_update_time": current_app.config["TRUST_UPDATE_TIME"],
+            "query_time": current_app.config["QUERY_TIME"],
         }
     )
 

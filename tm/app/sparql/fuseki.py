@@ -1,3 +1,4 @@
+import time
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from flask import current_app
 from tempfile import NamedTemporaryFile
@@ -22,6 +23,7 @@ class Fuseki:
         # self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
     def query(self, sparql_query, format="html"):
+        st = time.time()
         # print(f"Query sent:\n{sparql_query}")
         result = self.store.query(sparql_query)
         # current_app.logger.info(json.loads(result.serialize(format='json')))
@@ -31,7 +33,14 @@ class Fuseki:
             result = self.__get_text(result)
         elif format == "json":
             result = json.loads(result.serialize(format="json"))
-
+        query_time = time.time() - st
+        if not current_app.config["QUERY_TIME"]:
+            current_app.config["QUERY_TIME"] = (query_time, 1)
+        else:
+            current_app.config["QUERY_TIME"] = (
+                current_app.config["QUERY_TIME"][0] + query_time,
+                current_app.config["QUERY_TIME"][1] + 1,
+            )
         count = len(result["results"]["bindings"])
         current_app.logger.info(f"Total {count} results retrieved.")
         return result
