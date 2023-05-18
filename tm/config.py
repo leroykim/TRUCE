@@ -26,6 +26,7 @@ class Config(object):
     RECIPIENT_POLICY_CHECK_TIME = None
     CUSTODIAN_POLICY_CHECK_TIME = None
     TRUST_UPDATE_TIME = None
+    CREDIBILITY_UPDATE_TIME = None
     QUERY_TIME = None
     EPOCH = 0
 

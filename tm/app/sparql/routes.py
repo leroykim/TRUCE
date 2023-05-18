@@ -38,7 +38,7 @@ def query_api():
 
     # Policy against data custodian
     isCompliant, dua_result = duaPolicyChecker.checkDataCustodian(category)
-    trustManager.update("user_data_custodian", dua_result)
+    trustManager.update_credibility(dua_result)
     if not isCompliant:
         return (
             "Service Unavailable.",

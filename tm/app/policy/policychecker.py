@@ -59,7 +59,7 @@ class DUAPolicyChecker:
                 current_app.config["RECIPIENT_POLICY_CHECK_TIME"][1] + 1,
             )
         current_app.logger.info(f"RECIPIENT_POLICY_CHECK_TIME: {policy_time}")
-        isCompliant = None
+        isCompliant = True
         for key, value in result_dict.items():
             current_app.logger.info(f"{key}: {value}")
             if not value:
@@ -72,6 +72,23 @@ class DUAPolicyChecker:
         data_existence = self.duapolicy.check_requested_data_existence(
             requested_data=requested_data
         )
+        result_dict["data_existence"] = self.fuseki.ask(ask_query=data_existence)
+        policy_time = time.time() - st
+
+        if not current_app.config["CUSTODIAN_POLICY_CHECK_TIME"]:
+            current_app.config["CUSTODIAN_POLICY_CHECK_TIME"] = (policy_time, 1)
+        else:
+            current_app.config["CUSTODIAN_POLICY_CHECK_TIME"] = (
+                current_app.config["CUSTODIAN_POLICY_CHECK_TIME"][0] + policy_time,
+                current_app.config["CUSTODIAN_POLICY_CHECK_TIME"][1] + 1,
+            )
+        current_app.logger.info(f"CUSTODIAN_POLICY_CHECK_TIME: {policy_time}")
+        isCompliant = True
+        for key, value in result_dict.items():
+            current_app.logger.info(f"{key}: {value}")
+            if not value:
+                isCompliant = False
+        return isCompliant, result_dict
 
 
 class TrustPolicyManager:

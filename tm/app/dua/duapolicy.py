@@ -4,6 +4,7 @@ from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple
 from app.policy.accesspolicy import AccessPolicy
 from app.sparql.query import SPARQLAskQuery
 from app.sparql.namespace import SYN
+from rdflib import RDF
 
 
 class DUAPolicy(AccessPolicy):
@@ -70,6 +71,7 @@ class DUAPolicy(AccessPolicy):
 
         return ask_query.get_text()
 
+    # Data custodian policies
     def check_requested_data_existence(self, requested_data: str):
         """
         This policy checks if the requested data exists in the data custodian's graph database.
@@ -81,13 +83,17 @@ class DUAPolicy(AccessPolicy):
             triples=[
                 Triple(
                     subject="?data",
-                    predicate="a",
-                    object=f'"{SYN[requested_data]}"',
+                    predicate="rdf:type",
+                    object=f"syn:{requested_data}",
                 ),
             ]
         )
         ask_query = self.default_query()
         ask_query.set_pattern(data_existence_pattern)
+
+        current_app.logger.info(
+            f"check_requested_data_existence:\n {ask_query.get_text()}"
+        )
 
         return ask_query.get_text()
 

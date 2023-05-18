@@ -1,4 +1,5 @@
 from SPARQLBurger.SPARQLQueryBuilder import SPARQLGraphPattern, Triple
+from flask import current_app
 
 """
 The methods in this file are used to generate variables and data properties of SPARQL queries
@@ -11,7 +12,9 @@ def get_variables(data_category_selection: dict) -> list:
     Get variables of selected data categories.
     Methods that returns variables for each data category are defined in the bottom of this file.
     """
-    print(f"get_variables: {type(data_category_selection)} {data_category_selection}")
+    current_app.logger.info(
+        f"get_variables: {type(data_category_selection)} {data_category_selection}"
+    )
     variable_list = []
     for data_category, isSelected in data_category_selection.items():
         if isSelected:
@@ -82,6 +85,7 @@ def get_data_properties(data_category_selection: dict) -> SPARQLGraphPattern:
     """
     data_property_pattern = SPARQLGraphPattern()
     for data_category, isSelected in data_category_selection.items():
+        data_category = data_category.lower()
         if isSelected:
             if data_category == "allergy":
                 data_property_pattern.add_triples(get_allergy_data_properties())

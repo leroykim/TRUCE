@@ -79,15 +79,16 @@ class SyntheaQueryApiFactory:
         # Gather necessary information
         prefix_list = current_app.config["PREFIX_DICT"]
         variable_list = triple.get_variables(data_category_selection=self.category)
-        data_property_pattern = triple.get_data_properties(
+        data_property_triples = triple.get_data_properties(
             data_category_selection=self.category
         )
+        current_app.logger.info(data_property_triples)
         # Build select query
         select_query = SPARQLSelectQuery()
         for prefix, namespace in prefix_list.items():
             select_query.add_prefix(prefix=Prefix(prefix=prefix, namespace=namespace))
         select_query.add_variables(variables=variable_list)
-        select_query.set_where_pattern(graph_pattern=data_property_pattern)
+        select_query.set_where_pattern(graph_pattern=data_property_triples)
         current_app.logger.info(select_query.get_text())
 
         return select_query.get_text()
