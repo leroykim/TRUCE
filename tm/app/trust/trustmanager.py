@@ -27,7 +27,7 @@ class TrustManager:
             user_id, currunt_behavior_trust, new_behavior_trust
         )
 
-        current_app.logger.info(f"\n{update_query.get_text()}")
+        # current_app.logger.info(f"\n{update_query.get_text()}")
 
         self.fuseki.update(sparql_query=update_query.get_text())
 
@@ -39,7 +39,7 @@ class TrustManager:
                 current_app.config["TRUST_UPDATE_TIME"][0] + update_time,
                 current_app.config["TRUST_UPDATE_TIME"][1] + 1,
             )
-        current_app.logger.info(f"TRUST_UPDATE_TIME: {update_time}")
+        # current_app.logger.info(f"TRUST_UPDATE_TIME: {update_time}")
 
     def update_credibility(self, policy_result: dict[str, bool]):
         st = time.time()
@@ -54,7 +54,7 @@ class TrustManager:
             current=currunt_credibility, new=new_credibility
         )
 
-        current_app.logger.info(f"\n{update_query.get_text()}")
+        # current_app.logger.info(f"\n{update_query.get_text()}")
 
         self.fuseki.update(sparql_query=update_query.get_text())
 

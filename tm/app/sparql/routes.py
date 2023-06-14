@@ -68,7 +68,9 @@ def get_elapsed_time():
             "recipient_policy_check_time": current_app.config[
                 "RECIPIENT_POLICY_CHECK_TIME"
             ],
-            "custodian_policy_check_time": "not implemented yet",
+            "custodian_policy_check_time": current_app.config[
+                "CUSTODIAN_POLICY_CHECK_TIME"
+            ],
             "trust_update_time": current_app.config["TRUST_UPDATE_TIME"],
             "query_time": current_app.config["QUERY_TIME"],
         }

@@ -11,9 +11,9 @@ services:
 
   # Fuseki
   fuseki:
-    image: leroykim/jena-fuseki-4.7.0:arm64v8
+    image: leroykim/jena-fuseki-4.7.0:latest
     container_name: fuseki # prevent auto-naming
-    platform: linux/arm64
+    platform: linux/amd64
     depends_on:
       - fuseki-data
     ports:

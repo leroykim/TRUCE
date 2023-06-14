@@ -91,9 +91,9 @@ class DUAPolicy(AccessPolicy):
         ask_query = self.default_query()
         ask_query.set_pattern(data_existence_pattern)
 
-        current_app.logger.info(
-            f"check_requested_data_existence:\n {ask_query.get_text()}"
-        )
+        # current_app.logger.info(
+        #     f"check_requested_data_existence:\n {ask_query.get_text()}"
+        # )
 
         return ask_query.get_text()
 

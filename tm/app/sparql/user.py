@@ -60,14 +60,14 @@ class UserInfo:
 
     def __get_trust_score(self):
         query = self.__get_trust_query()
-        current_app.logger.info(query)
+        # current_app.logger.info(query)
         user_info = self.fuseki.query(query, format="json")
 
         bindings = user_info["results"]["bindings"][0]
         self.identity_trust = bindings["identity_trust"]["value"]
         self.behavioral_trust = bindings["behavioral_trust"]["value"]
 
-        current_app.logger.info(f"\nUser info query = \n{query}")
+        # current_app.logger.info(f"\nUser info query = \n{query}")
         current_app.logger.info(f"User's identity trust score = {self.identity_trust}")
         current_app.logger.info(
             f"User's behavioral trust score = {self.behavioral_trust}"

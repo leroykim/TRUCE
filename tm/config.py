@@ -23,11 +23,11 @@ class Config(object):
     NAMESPACE_ABR = os.environ.get("NAMESPACE_ABR")
 
     # Timer
-    RECIPIENT_POLICY_CHECK_TIME = None
-    CUSTODIAN_POLICY_CHECK_TIME = None
-    TRUST_UPDATE_TIME = None
-    CREDIBILITY_UPDATE_TIME = None
-    QUERY_TIME = None
+    RECIPIENT_POLICY_CHECK_TIME = (0, 0)
+    CUSTODIAN_POLICY_CHECK_TIME = (0, 0)
+    TRUST_UPDATE_TIME = (0, 0)
+    CREDIBILITY_UPDATE_TIME = (0, 0)
+    QUERY_TIME = (0, 0)
     EPOCH = 0
 
     # Trust score changes

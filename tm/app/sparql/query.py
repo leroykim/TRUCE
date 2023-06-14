@@ -33,7 +33,7 @@ class SyntheaQueryGuiFactory:
             select_query.add_prefix(prefix=Prefix(prefix=prefix, namespace=namespace))
         select_query.add_variables(variables=variable_list)
         select_query.set_where_pattern(graph_pattern=data_property_pattern)
-        current_app.logger.info(select_query.get_text())
+        # current_app.logger.info(select_query.get_text())
 
         return select_query.get_text()
 
@@ -62,7 +62,7 @@ class SyntheaQueryApiFactory:
             ask_query += Prefix(prefix=prefix, namespace=namespace).get_text()
         ask_query += "ASK"
         ask_query += data_property_pattern.get_text()
-        current_app.logger.info(ask_query)
+        # current_app.logger.info(ask_query)
 
         return ask_query
 
@@ -82,14 +82,14 @@ class SyntheaQueryApiFactory:
         data_property_triples = triple.get_data_properties(
             data_category_selection=self.category
         )
-        current_app.logger.info(data_property_triples)
+        # current_app.logger.info(data_property_triples)
         # Build select query
         select_query = SPARQLSelectQuery()
         for prefix, namespace in prefix_list.items():
             select_query.add_prefix(prefix=Prefix(prefix=prefix, namespace=namespace))
         select_query.add_variables(variables=variable_list)
         select_query.set_where_pattern(graph_pattern=data_property_triples)
-        current_app.logger.info(select_query.get_text())
+        # current_app.logger.info(select_query.get_text())
 
         return select_query.get_text()
 
@@ -114,5 +114,5 @@ class SPARQLAskQuery:
             ask_query += prefix.get_text()
         ask_query += "ASK"
         ask_query += self.graph_pattern.get_text()
-        current_app.logger.info(f"ASK query generated:\n{ask_query}")
+        # current_app.logger.info(f"ASK query generated:\n{ask_query}")
         return ask_query

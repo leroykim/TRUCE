@@ -12,9 +12,9 @@ def get_variables(data_category_selection: dict) -> list:
     Get variables of selected data categories.
     Methods that returns variables for each data category are defined in the bottom of this file.
     """
-    current_app.logger.info(
-        f"get_variables: {type(data_category_selection)} {data_category_selection}"
-    )
+    # current_app.logger.info(
+    #     f"get_variables: {type(data_category_selection)} {data_category_selection}"
+    # )
     variable_list = []
     for data_category, isSelected in data_category_selection.items():
         if isSelected:
