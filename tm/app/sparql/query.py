@@ -10,7 +10,7 @@ from . import formdata
 from . import triple
 
 
-class SyntheaQueryGuiFactory:
+class SyntheaGuiQueryFactory:
     def __init__(self, form: FlaskForm):
         self.form = form
         self.user_query = form.sparql_query.data
@@ -38,7 +38,7 @@ class SyntheaQueryGuiFactory:
         return select_query.get_text()
 
 
-class SyntheaQueryApiFactory:
+class SyntheaApiQueryFactory:
     def __init__(self, category: str, condition: str):
         """
         :param category: data category. e.g. "patient", "encounter", "observation", "condition", "procedure", "medication"
@@ -75,7 +75,7 @@ class SyntheaQueryApiFactory:
 
         return ask_query.get_text()
 
-    def get_select_query(self):
+    def get_select_data_query(self):
         # Gather necessary information
         prefix_list = current_app.config["PREFIX_DICT"]
         variable_list = triple.get_variables(data_category_selection=self.category)

@@ -145,3 +145,4 @@ ontology/file_manager.ipynb
 test_data/fuseki-management.ipynb
 TRUCE.code-workspace
 .vscode/settings.json
+tm/.env

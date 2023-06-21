@@ -22,9 +22,18 @@ class Fuseki:
 
         # self.remote_endpoint_list = current_app.config['REMOTE_URL_DICT']
 
-    def query(self, sparql_query, format="html"):
+    """
+    SELECT DISTINCT ?user ?label
+WHERE {
+  ?user rdf:type tst:User .
+  ?user rdfs:label ?label .
+}
+    """
+
+    def query_with_time(self, sparql_query, format="html"):
         st = time.time()
-        # print(f"Query sent:\n{sparql_query}")
+        print(f"Fuseki URL: {self.query_endpoint}")
+        print(f"Query sent:\n{sparql_query}")
         result = self.store.query(sparql_query)
         # current_app.logger.info(json.loads(result.serialize(format='json')))
         if format == "html":
@@ -44,6 +53,19 @@ class Fuseki:
         count = len(result["results"]["bindings"])
         current_app.logger.info(f"Total {count} results retrieved.")
         return result
+
+    def query(self, sparql_query):
+        result = self.store.query(sparql_query)
+        result = json.loads(result.serialize(format="json"))
+        count = len(result["results"]["bindings"])
+        current_app.logger.info(f"Total {count} results retrieved.")
+        return result
+
+    def query_user_trustscore(self, user_id):
+        pass
+
+    def query_org_trustscore(self, org_id):
+        pass
 
     def update(self, sparql_query):
         self.store.update(sparql_query)

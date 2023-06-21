@@ -5,7 +5,7 @@ from app.sparql.forms import SPARQLForm, DataCategoryForm
 from app.sparql import bp
 from app.trust.trustmanager import TrustManager
 from app.sparql.fuseki import Fuseki
-from app.sparql.query import SyntheaQueryGuiFactory, SyntheaQueryApiFactory
+from app.sparql.query import SyntheaGuiQueryFactory, SyntheaApiQueryFactory
 from app.policy.policychecker import DUAPolicyChecker
 
 
@@ -47,9 +47,9 @@ def query_api():
 
     # Query
     fuseki = Fuseki()
-    query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
-    query = query_factory.get_select_query()
-    result = fuseki.query(query, format="json")
+    query_factory = SyntheaApiQueryFactory(category=category, condition=condition)
+    query = query_factory.get_select_data_query()
+    result = fuseki.query_with_time(query, format="json")
     total_count = len(result["results"]["bindings"])
 
     return json.dumps(
@@ -57,6 +57,18 @@ def query_api():
             "count": total_count,
             "query": query,
             "result": result["results"]["bindings"],
+        }
+    )
+
+
+@bp.route("/trust_score", methods=["GET"])
+def get_trust_score():
+    user_id = request.args.get("user_id")
+    trustManager = TrustManager()
+    return json.dumps(
+        {
+            "behavior_trust_score": trustManager.get_behavior_trust_score(user_id),
+            "identity_trust_score": trustManager.get_identity_trust_score(user_id),
         }
     )
 
@@ -85,10 +97,10 @@ def query_patient():
         flash("SPARQL query has been sent.")
 
         st = time.time()
-        query_factory = SyntheaQueryGuiFactory(form=form)
+        query_factory = SyntheaGuiQueryFactory(form=form)
         fuseki = Fuseki()
         query = query_factory.get_select_query()
-        result = fuseki.query(query)
+        result = fuseki.query_with_time(query)
         et = time.time()
         elapsed_time = et - st
 
@@ -119,12 +131,12 @@ def run_experiment():
     endurance = request.args.get("endurance")
     incidents = []
     st = time.time()
-    query_factory = SyntheaQueryApiFactory(category=category, condition=condition)
-    query = query_factory.get_select_query()
+    query_factory = SyntheaApiQueryFactory(category=category, condition=condition)
+    query = query_factory.get_select_data_query()
     fuseki = Fuseki()
     for i in range(int(endurance)):
         isExist = fuseki.ask(query_factory.get_ask_existence_query())
-        result = fuseki.query(query, format="json")
+        result = fuseki.query_with_time(query, format="json")
         total_count = len(result["results"]["bindings"])
         if isExist and total_count == 0:
             incidents.append(-1)
@@ -148,7 +160,7 @@ def query_sparql():
     if form.validate_on_submit():
         flash("SPARQL query has been sent.")
         fuseki = Fuseki()
-        result = fuseki.query(form.sparql_query.data)
+        result = fuseki.query_with_time(form.sparql_query.data)
     else:
         result = None
     return render_template(
